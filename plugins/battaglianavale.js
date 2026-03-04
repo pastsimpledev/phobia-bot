@@ -6,7 +6,7 @@ let handler = async (m, { conn, text, command }) => {
 
     // --- COMANDO INIZIALE: .battaglia @user ---
     if (command === 'battaglia') {
-        if (global.navale[chat]) return m.reply('*⚠️ C\'è già una partita in corso in questo gruppo.*')
+        if (global.navale[chat]) return m.reply('*⚠️ C\'è già una sfida in sospeso o una partita in corso in questo gruppo.*')
         
         let target = m.mentionedJid[0] || (m.quoted ? m.quoted.sender : null)
         if (!target) return m.reply('*Devi menzionare l\'avversario che desideri sfidare!*')
@@ -28,12 +28,12 @@ let handler = async (m, { conn, text, command }) => {
         intro += `*SFIDANTE:* @${user.split('@')[0]}\n`
         intro += `*AVVERSARIO:* @${target.split('@')[0]}\n\n`
         intro += `*📜 REGOLE:*\n`
-        intro += `*1.* Griglia *5x5*.\n`
-        intro += `*2.* Hai *3 Navi* [ 🚢 ].\n`
-        intro += `*3.* Usa *.fuoco [coordinate]* (es: .fuoco A1).\n\n`
+        intro += `*1.* Griglia di gioco *5x5*.\n`
+        intro += `*2.* Ogni flotta ha *3 Navi* [ 🚢 ].\n`
+        intro += `*3.* Si attacca col comando *.fuoco [coordinate]* (es: .fuoco A1).\n\n`
         intro += `*@${target.split('@')[0]}, accetti la sfida?*`
 
-        // Creazione del messaggio con Bottoni
+        // Configurazione Bottoni
         const buttons = [
             { buttonId: `.accetta`, buttonText: { displayText: 'ACCETTA ✅' }, type: 1 },
             { buttonId: `.rifiuta`, buttonText: { displayText: 'RIFIUTA ❌' }, type: 1 }
@@ -41,7 +41,7 @@ let handler = async (m, { conn, text, command }) => {
 
         const buttonMessage = {
             text: intro,
-            footer: 'Seleziona una delle opzioni qui sotto',
+            footer: 'Seleziona un\'opzione per continuare',
             buttons: buttons,
             headerType: 1,
             mentions: [user, target]
@@ -54,36 +54,37 @@ let handler = async (m, { conn, text, command }) => {
     if (command === 'accetta') {
         let game = global.navale[chat]
         if (!game || game.status !== 'WAITING') return
-        if (user !== game.p2) return m.reply('*Solo lo sfidato può premere questo bottone.*')
+        if (user !== game.p2) return m.reply('*Solo l\'utente sfidato può accettare la partita.*')
 
         game.status = 'PLAYING'
-        return conn.reply(chat, `*🚢 PARTITA INIZIATA!*\n\n*Tocca a @${game.p1.split('@')[0]}*\nUsa *.fuoco [coord]*`, m, { mentions: [game.p1] })
+        return conn.reply(chat, `*🚢 PARTITA INIZIATA! LE NAVI SONO SCHIERATE!*\n\n*Inizia @${game.p1.split('@')[0]}*\nUsa il comando *.fuoco [A-E][1-5]*`, m, { mentions: [game.p1] })
     }
 
-    // --- LOGICA RIFIUTA ---
+    // --- LOGICA RIFIUTA (RESET IMMEDIATO) ---
     if (command === 'rifiuta') {
         let game = global.navale[chat]
         if (!game || game.status !== 'WAITING') return
-        if (user !== game.p2) return m.reply('*Non puoi rifiutare per altri.*')
+        if (user !== game.p2) return m.reply('*Non puoi rifiutare una sfida non diretta a te.*')
 
+        // Eliminiamo la sessione per permettere una nuova sfida subito
         delete global.navale[chat]
-        return conn.reply(chat, `*SFIDA ANNULLATA! @${user.split('@')[0]} si è ritirato.*`, m, { mentions: [user] })
+        return conn.reply(chat, `*SFIDA ANNULLATA! @${user.split('@')[0]} ha rifiutato. La chat è ora libera per una nuova sfida.*`, m, { mentions: [user] })
     }
 
     // --- COMANDO DI ATTACCO: .fuoco ---
     if (command === 'fuoco') {
         let game = global.navale[chat]
-        if (!game || game.status !== 'PLAYING') return m.reply('*Nessuna battaglia attiva.*')
-        if (user !== game.turno) return m.reply('*Non è il tuo turno!*')
+        if (!game || game.status !== 'PLAYING') return m.reply('*Nessuna battaglia attiva in questo momento.*')
+        if (user !== game.turno) return m.reply('*Non è il tuo turno! Attendi la mossa dell\'avversario.*')
 
         let coord = text.toUpperCase().trim()
-        if (!/^[A-E][1-5]$/.test(coord)) return m.reply('*Coordinate errate (es: A1).*')
+        if (!/^[A-E][1-5]$/.test(coord)) return m.reply('*Coordinate errate! Inserisci un valore da A1 a E5.*')
 
         let isP1 = user === game.p1
         let opponentBoard = isP1 ? game.board2 : game.board1
         let hits = isP1 ? game.hits2 : game.hits1
 
-        if (hits.includes(coord)) return m.reply('*Già colpito!*')
+        if (hits.includes(coord)) return m.reply('*Hai già colpito questa posizione!*')
         hits.push(coord)
 
         let isHit = opponentBoard.includes(coord)
@@ -91,9 +92,8 @@ let handler = async (m, { conn, text, command }) => {
 
         if (win) {
             let vincitore = user
-            let perdente = isP1 ? game.p2 : game.p1
             delete global.navale[chat]
-            return conn.reply(chat, `*💥 VITTORIA! TUTTE LE NAVI AFFONDATE!* \n\n*Vincitore:* @${vincitore.split('@')[0]} 🏆`, m, { mentions: [vincitore] })
+            return conn.reply(chat, `*💥 VITTORIA! TUTTE LE NAVI NEMICHE SONO STATE AFFONDATE!* \n\n*Vincitore:* @${vincitore.split('@')[0]} 🏆`, m, { mentions: [vincitore] })
         }
 
         game.turno = isP1 ? game.p2 : game.p1
