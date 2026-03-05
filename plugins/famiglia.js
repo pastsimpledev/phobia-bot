@@ -19,64 +19,60 @@ let handler = async (m, { conn, text, command, usedPrefix }) => {
 
     checkUser(user)
 
-    // --- 1. MENU FAMIGLIA (RIPRISTINATO) ---
+    // --- MENU ---
     if (command === 'famiglia') {
-        let menu = `*🌳 SISTEMA GENEALOGICO REALE 🌳*\n\n`
-        menu += `👉 *${usedPrefix}unione @tag* - Chiedi unione\n`
-        menu += `👉 *${usedPrefix}accettaunione* - Accetta unione\n`
-        menu += `👉 *${usedPrefix}sciogli* - Divorzia\n`
-        menu += `👉 *${usedPrefix}adotta @tag* - Adotta un figlio\n`
-        menu += `👉 *${usedPrefix}disereda @tag* - Rimuovi un figlio\n`
-        menu += `👉 *${usedPrefix}famigliamia* - Visualizza l'albero (IMG)\n`
+        let menu = `*🌳 SISTEMA GENEALOGICO 🌳*\n\n`
+        menu += `👉 *${usedPrefix}unione @tag*\n`
+        menu += `👉 *${usedPrefix}adotta @tag*\n`
+        menu += `👉 *${usedPrefix}disereda @tag*\n`
+        menu += `👉 *${usedPrefix}famigliamia* (Albero Grafico)\n`
         return m.reply(menu)
     }
 
-    // --- 2. LOGICA DISEREDA (CORRETTA) ---
+    // --- DISEREDA ---
     if (command === 'disereda') {
         let target = m.mentionedJid[0] || (m.quoted ? m.quoted.sender : null)
-        if (!target) return m.reply('*⚠️ Tagga il figlio da rimuovere!*')
-        
+        if (!target) return m.reply('*⚠️ Tagga il figlio!*')
         let index = users[user].p.indexOf(target)
-        if (index === -1) return m.reply('*❌ Questo utente non è tuo figlio.*')
-
+        if (index === -1) return m.reply('*❌ Non è tuo figlio.*')
         users[user].p.splice(index, 1)
         if (users[target]) users[target].s = null
-        return m.reply(`*🚫 @${target.split('@')[0]} è stato rimosso dalla famiglia.*`, null, { mentions: [target] })
+        return m.reply(`*🚫 @${target.split('@')[0]} rimosso.*`, null, { mentions: [target] })
     }
 
-    // --- 3. GENERAZIONE IMMAGINE (SENZA EMOJI PER EVITARE ERRORI) ---
+    // --- ALBERO GRAFICO ---
     if (command === 'famigliamia' || command === 'albero') {
         let target = (command === 'famigliamia') ? user : (m.mentionedJid[0] || (m.quoted ? m.quoted.sender : user))
         checkUser(target)
 
-        await m.reply('⏳ *Generazione immagine...*')
+        await m.reply('⏳ *Generazione immagine in corso...*')
 
         const canvas = createCanvas(800, 750)
         const ctx = canvas.getContext('2d')
 
-        // Sfondo Scuro
         ctx.fillStyle = '#121212'
         ctx.fillRect(0, 0, canvas.width, canvas.height)
         
         const drawBox = async (id, x, y, label, color) => {
             if (!id) return
-            // Rettangolo
             ctx.fillStyle = color
             ctx.fillRect(x - 90, y - 45, 180, 90)
             ctx.strokeStyle = '#f1c40f'
             ctx.lineWidth = 4
             ctx.strokeRect(x - 90, y - 45, 180, 90)
             
-            // Testo
             ctx.fillStyle = '#000000'
             ctx.textAlign = 'center'
-            ctx.font = 'bold 18px sans-serif'
-            ctx.fillText(label, x, y - 10) // Titolo (GENITORE, TU, etc)
+            ctx.font = 'bold 18px Arial'
+            ctx.fillText(label, x, y - 10)
             
-            ctx.font = '15px sans-serif'
+            // --- FIX NOMI SPECIALI ---
+            // Usiamo il nome di WhatsApp, se fallisce puliamo il numero
             let name = conn.getName(id) || id.split('@')[0]
-            name = name.replace(/[^\x00-\x7F]/g, "") // Rimuove emoji dal nome per sicurezza
-            ctx.fillText(name.substring(0, 18), x, y + 20)
+            ctx.font = '14px Arial' 
+            // Accorciamo se troppo lungo per non uscire dal box
+            let displayName = name.length > 18 ? name.substring(0, 16) + '..' : name
+            ctx.fillText(displayName, x, y + 20)
         }
 
         let u = users[target]
@@ -84,17 +80,18 @@ let handler = async (m, { conn, text, command, usedPrefix }) => {
         let padre = u.s
 
         ctx.fillStyle = '#ffffff'
-        ctx.font = 'bold 30px sans-serif'
+        ctx.font = 'bold 30px Arial'
         ctx.textAlign = 'center'
         ctx.fillText(`ALBERO GENEALOGICO`, canvas.width / 2, 50)
 
-        // Linee e Box
+        // Linee Genitore
         if (padre) {
             ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2
             ctx.beginPath(); ctx.moveTo(400, 195); ctx.lineTo(400, 270); ctx.stroke()
             await drawBox(padre, 400, 150, 'GENITORE', '#3498db')
         }
 
+        // Tu e Partner
         if (partner) {
             ctx.strokeStyle = '#e74c3c'; ctx.beginPath()
             ctx.moveTo(310, 325); ctx.lineTo(490, 325); ctx.stroke()
@@ -104,6 +101,7 @@ let handler = async (m, { conn, text, command, usedPrefix }) => {
             await drawBox(target, 400, 325, 'TU', '#ffffff')
         }
 
+        // Figli
         if (u.p && u.p.length > 0) {
             ctx.strokeStyle = '#ffffff'; ctx.beginPath()
             ctx.moveTo(400, 370); ctx.lineTo(400, 460); ctx.stroke()
@@ -123,19 +121,19 @@ let handler = async (m, { conn, text, command, usedPrefix }) => {
     // --- ALTRI COMANDI ---
     if (command === 'adotta') {
         let target = m.mentionedJid[0] || (m.quoted ? m.quoted.sender : null)
-        if (!target || target === user) return m.reply('*⚠️ Tagga chi vuoi adottare!*')
+        if (!target || target === user) return m.reply('*⚠️ Tagga qualcuno!*')
         checkUser(target)
         if (users[target].s) return m.reply('*❌ Ha già un genitore!*')
         users[user].p.push(target)
         users[target].s = user
-        m.reply('*👶 Adozione completata!*')
+        m.reply('*👶 Adottato!*')
     }
 
     if (command === 'unione') {
         let target = m.mentionedJid[0] || (m.quoted ? m.quoted.sender : null)
         if (!target || target === user) return m.reply('*⚠️ Tagga il partner!*')
         users[target].propostaUnione = user
-        m.reply('*💍 Richiesta inviata!*')
+        m.reply('*💍 Proposta inviata!*')
     }
 
     if (command === 'accettaunione') {
@@ -144,7 +142,7 @@ let handler = async (m, { conn, text, command, usedPrefix }) => {
         users[user].c = proponente
         users[proponente].c = user
         delete users[user].propostaUnione
-        m.reply('*✨ Siete ora uniti!*')
+        m.reply('*✨ Siete ora partner!*')
     }
 
     if (command === 'sciogli') {
@@ -155,7 +153,7 @@ let handler = async (m, { conn, text, command, usedPrefix }) => {
     }
 }
 
-handler.help = ['albero', 'disereda', 'adotta', 'unione', 'famiglia']
+handler.help = ['albero', 'famiglia']
 handler.tags = ['giochi']
 handler.command = /^(unione|accettaunione|adotta|disereda|albero|famigliamia|sciogli|famiglia)$/i
 handler.group = true
