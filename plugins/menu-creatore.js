@@ -1,4 +1,3 @@
-
 import { promises } from 'fs'
 import { join } from 'path'
 import { xpRange } from '../lib/levelling.js'
@@ -7,33 +6,36 @@ import os from 'os'
 
 const defaultMenu = {
   before: ``.trimStart(),
-  header: 'ㅤㅤ⋆｡˚『 ╭ \`MENU CREATORE\` ╯ 』˚｡⋆\n╭',
+  header: 'ㅤㅤ⋆｡˚『 ╭ `MENU CREATORE` ╯ 』˚｡⋆\n╭',
   body: '│ ➤『🕊️』 %cmd\n',
   footer: '*╰⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*\n',
-  after: `> 🩸 𓆩⟡𓆪 𝙫𝙖𝙧𝙚𝙗𝙤𝙩 𓆩⟡𓆪`,                   
+  after: `> 🩸 𓆩⟡𓆪 *bloodbot* 𓆩⟡𓆪`,                   
 }
-let handler = async (m, { conn, usedPrefix: _p, __dirname, args, command}) => {
-let tags = {
-'creatore': 'MenuOwner',
-}
-let img = 'https://i.ibb.co/N25rgPrX/Gaara.jpg'
 
+let handler = async (m, { conn, usedPrefix: _p, __dirname, args, command}) => {
+  let tags = {
+    'creatore': 'MenuOwner',
+  }
+  
   try {
-      let dash = global.dashmenu
-          let m1 = global.dmenut
-      let m2 = global.dmenub
-      let m3 = global.dmenuf
-      let m4 = global.dmenub2
-      let cc = global.cmenut
-      let c1 = global.cmenuh
-      let c2 = global.cmenub
-      let c3 = global.cmenuf
-      let c4 = global.cmenua
-      let lprem = global.lopr
-      let llim = global.lolm
-      let tag = `@${m.sender.split('@')[0]}`
+    // Definiamo i valori globali o stringhe vuote se non esistono
+    let dash = global.dashmenu || ''
+    let m1 = global.dmenut || ''
+    let m2 = global.dmenub || ''
+    let m3 = global.dmenuf || ''
+    let m4 = global.dmenub2 || ''
+    let cc = global.cmenut || ''
+    let c1 = global.cmenuh || ''
+    let c2 = global.cmenub || ''
+    let c3 = global.cmenuf || ''
+    let c4 = global.cmenua || ''
+    let lprem = global.lopr || 'Ⓟ'
+    let llim = global.lolm || 'Ⓛ'
+    let fake = global.fake || { contextInfo: { forwardedNewsletterMessageInfo: {} } }
+    
+    let tag = `@${m.sender.split('@')[0]}`
     let ucpn = `${ucapan()}`
-    let d = new Date(new Date + 3600000)
+    let d = new Date(new Date() + 3600000)
     let locale = 'it'
     let week = d.toLocaleDateString(locale, { weekday: 'long' })
     let date = d.toLocaleDateString(locale, {
@@ -41,34 +43,19 @@ let img = 'https://i.ibb.co/N25rgPrX/Gaara.jpg'
       month: 'long',
       year: 'numeric'
     })
-    let weton = ['Pahing', 'Pon', 'Wage', 'Kliwon', 'Legi'][Math.floor(d / 84600000) % 5]
-    let dateIslamic = Intl.DateTimeFormat(locale + '-TN-u-ca-islamic', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
-    }).format(d)
     let time = d.toLocaleTimeString(locale, {
       hour: 'numeric',
       minute: 'numeric',
       second: 'numeric'
     })
+
     let _uptime = process.uptime() * 1000
-    let _muptime
-    if (process.send) {
-      process.send('uptime')
-      _muptime = await new Promise(resolve => {
-        process.once('message', resolve)
-        setTimeout(resolve, 1000)
-      }) * 1000
-    }
-    let muptime = clockString(_muptime)
     let uptime = clockString(_uptime)
-
     let wib = moment.tz('Europe/Rome').format('HH:mm:ss')
-
     let mode = global.opts['self'] ? 'Privato' : 'Pubblico'
     let _package = JSON.parse(await promises.readFile(join(__dirname, '../package.json')).catch(_ => ({}))) || {}
-    let { age, exp, limit, level, role, registered, eris} = global.db.data.users[m.sender]
+    
+    let { exp, limit, level, role, registered, age } = global.db.data.users[m.sender]
     let { min, xp, max } = xpRange(level, global.multiplier)
     let name = await conn.getName(m.sender)
     let premium = global.db.data.users[m.sender].premiumTime
@@ -77,6 +64,7 @@ let img = 'https://i.ibb.co/N25rgPrX/Gaara.jpg'
 
     let totalreg = Object.keys(global.db.data.users).length
     let rtotalreg = Object.values(global.db.data.users).filter(user => user.registered == true).length
+    
     let help = Object.values(global.plugins).filter(plugin => !plugin.disabled).map(plugin => {
       return {
         help: Array.isArray(plugin.tags) ? plugin.help : [plugin.help],
@@ -87,19 +75,22 @@ let img = 'https://i.ibb.co/N25rgPrX/Gaara.jpg'
         enabled: !plugin.disabled,
       }
     })
+
     let groups = {}
     for (let tag in tags) {
       groups[tag] = []
       for (let plugin of help)
         if (plugin.tags && plugin.tags.includes(tag))
           if (plugin.help) groups[tag].push(plugin)
-          }
+    }
+
     conn.menu = conn.menu ? conn.menu : {}
     let before = conn.menu.before || defaultMenu.before
     let header = conn.menu.header || defaultMenu.header
     let body = conn.menu.body || defaultMenu.body
     let footer = conn.menu.footer || defaultMenu.footer
     let after = conn.menu.after || (conn.user.jid == global.conn.user.jid ? '' : `Powered by https://wa.me/${global.conn.user.jid.split`@`[0]}`) + defaultMenu.after
+
     let _text = [
       before,
       ...Object.keys(tags).map(tag => {
@@ -117,11 +108,12 @@ let img = 'https://i.ibb.co/N25rgPrX/Gaara.jpg'
       }),
       after
     ].join('\n')
+
     let text = typeof conn.menu == 'string' ? conn.menu : typeof conn.menu == 'object' ? _text : ''
     let replace = {
       '%': '%',
       p: _p,
-      muptime: muptime,
+      muptime: uptime,
       me: conn.getName(conn.user.jid),
       npmname: _package.name,
       npmdesc: _package.description,
@@ -130,11 +122,11 @@ let img = 'https://i.ibb.co/N25rgPrX/Gaara.jpg'
       maxexp: xp,
       totalexp: exp,
       xp4levelup: max - exp,
-      github: _package.homepage ? _package.homepage.url || _package.homepage : '[unknown github url]',
-  dash,m1,m2,m3,m4,cc,c1,c2,c3,c4,lprem,llim,
-  ucpn,platform,wib,mode,_p,eris,age,name,prems,level,limit,weton,week,date,dateIslamic,time,totalreg,rtotalreg,role,
+      dash, m1, m2, m3, m4, cc, c1, c2, c3, c4, lprem, llim,
+      ucpn, platform, wib, mode, _p, age, name, prems, level, limit, week, date, time, totalreg, rtotalreg, role,
       readmore: readMore
     }
+    
     text = text.replace(new RegExp(`%(${Object.keys(replace).sort((a, b) => b.length - a.length).join`|`})`, 'g'), (_, name) => '' + replace[name])
 
     await m.react('🕊️')
@@ -144,12 +136,11 @@ let img = 'https://i.ibb.co/N25rgPrX/Gaara.jpg'
       gifPlayback: true,
       gifAttribution: 2,
       mimetype: 'video/mp4',
-      ...fake, // Usa il global.fake per il contesto
       contextInfo: {
-        ...fake.contextInfo, // Mantieni il contesto del fake
+        ...(fake.contextInfo || {}),
         mentionedJid: [m.sender],
         forwardedNewsletterMessageInfo: {
-            ...fake.contextInfo.forwardedNewsletterMessageInfo,
+            ...(fake.contextInfo?.forwardedNewsletterMessageInfo || {}),
             newsletterName: "ᰔᩚ . ˚ Menu Creatore ☆˒˒"
         }
       }
@@ -157,10 +148,12 @@ let img = 'https://i.ibb.co/N25rgPrX/Gaara.jpg'
 
   } catch (e) {
     console.error(e)
-    conn.reply(m.chat, global.fake.error, m)
+    let errorMsg = global.fake && global.fake.error ? global.fake.error : '❌ Errore nel caricamento del menu.'
+    conn.reply(m.chat, errorMsg, m)
     throw e
   }
 }
+
 handler.help = ['menucreatore']
 handler.tags = ['menu']
 handler.command = ['menuowner', 'menucreatore']
@@ -176,20 +169,13 @@ function clockString(ms) {
   let s = isNaN(ms) ? '--' : Math.floor(ms / 1000) % 60
   return [h, ' H ', m, ' M ', s, ' S '].map(v => v.toString().padStart(2, 0)).join('')
 }
+
 function ucapan() {
   const time = moment.tz('Europe/Rome').format('HH')
   let res = "Sveglio così presto? 🥱"
-  if (time >= 4) {
-    res = "Mattina 🌄"
-  }
-  if (time >= 10) {
-    res = "Mattina ☀️"
-  }
-  if (time >= 15) {
-    res = "Pomeriggio 🌇"
-  }
-  if (time >= 18) {
-    res = "Sera 🌙"
-  }
+  if (time >= 4) res = "Mattina 🌄"
+  if (time >= 10) res = "Mattina ☀️"
+  if (time >= 15) res = "Pomeriggio 🌇"
+  if (time >= 18) res = "Sera 🌙"
   return res
 }
