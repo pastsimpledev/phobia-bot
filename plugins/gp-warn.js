@@ -6,29 +6,33 @@ const handler = async (m, { conn, text, command, usedPrefix }) => {
             return m.reply(createUsageMessage(usedPrefix, command));
         }
 
-        // Recupero dinamico dei membri per evitare cache vecchie
-        const groupMetadata = await conn.groupMetadata(m.chat).catch(() => ({ participants: [] }));
+        // Recuperiamo i partecipanti e puliamo i loro ID lasciando solo i numeri
+        const groupMetadata = await conn.groupMetadata(m.chat);
         const participants = groupMetadata.participants || [];
         
-        // Controllo flessibile: confronta solo la parte numerica dell'ID
-        const targetNumber = target.split('@')[0];
-        const isMember = participants.some(p => p.id.startsWith(targetNumber));
+        // Estraiamo solo i numeri dal target (es: 39351...)
+        const targetClean = target.replace(/[^0-9]/g, '');
+        
+        // Verifichiamo se quel numero esiste tra i partecipanti
+        const isMember = participants.some(p => p.id.replace(/[^0-9]/g, '') === targetClean);
+        // Troviamo l'ID reale nel gruppo per evitare errori di invio messaggio
+        const realTarget = participants.find(p => p.id.replace(/[^0-9]/g, '') === targetClean)?.id;
 
-        if (!isMember) {
-            return m.reply(`『 ❌ 』 *L'utente ${targetNumber} non è presente in questo gruppo.*`);
+        if (!isMember || !realTarget) {
+            return m.reply(`『 ❌ 』 *L'utente ${targetClean} non è presente in questo gruppo.*`);
         }
 
-        const reason = getReason(m, text, targetNumber);
+        const reason = getReason(m, text, targetClean);
 
-        if (target === conn.user.jid) {
+        if (realTarget === conn.user.jid) {
             return m.reply('『 ‼️ 』 *Non puoi ammonire il bot.*');
         }
 
-        if (global.owner.some(owner => owner[0] === targetNumber)) {
+        if (global.owner.some(owner => owner[0] === targetClean)) {
             return m.reply('🤨 Non puoi ammonire il mio creatore!');
         }
 
-        const user = getUserData(target);
+        const user = getUserData(realTarget);
         if (!user.warns) user.warns = {};
         if (typeof user.warns[m.chat] !== 'number') user.warns[m.chat] = 0;
 
@@ -37,13 +41,13 @@ const handler = async (m, { conn, text, command, usedPrefix }) => {
 
         if (count >= 3) {
             user.warns[m.chat] = 0;
-            await handleRemoval(conn, m, target);
+            await handleRemoval(conn, m, realTarget);
         } else {
-            await handleWarnMessage(conn, m, target, count, reason);
+            await handleWarnMessage(conn, m, realTarget, count, reason);
         }
     } catch (error) {
         console.error(error);
-        return m.reply('*[!] Errore interno durante l\'esecuzione.*');
+        return m.reply('*[!] Errore critico nel comando warn.*');
     }
 };
 
@@ -57,9 +61,8 @@ function getTargetUser(m, text) {
     return null;
 }
 
-function getReason(m, text, targetId) {
-    if (m.quoted?.text) return text.trim() || 'Motivo non specificato';
-    let reason = text.replace(targetId, '').replace(/@/g, '').trim();
+function getReason(m, text, targetClean) {
+    let reason = text.replace(targetClean, '').replace(/@/g, '').trim();
     return reason || 'Motivo non specificato';
 }
 
