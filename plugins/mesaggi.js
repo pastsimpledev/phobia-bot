@@ -12,94 +12,98 @@ const rewards = [
 ]
 
 let handler = async (m, { conn, command }) => {
-    // Gestione comando manuale per statistiche
     let who = m.sender
     global.db.data.users[who] = global.db.data.users[who] || {}
     let user = global.db.data.users[who]
-    
-    let msgs = user.msgs || 0
-    let next = rewards.find(r => r.limit > msgs) || { limit: 'MAX', titolo: 'DIO DELLA CHAT' }
 
-    let stats = `ㅤ⋆｡˚『 ╭ \`📊 STATISTICHE ATTIVITÀ \` ╯ 』˚｡⋆\n╭\n`
+    // --- COMANDO CLASSIFICA (.topmsgs) ---
+    if (command === 'topmsgs' || command === 'classifica') {
+        let users = Object.entries(global.db.data.users)
+            .map(([id, data]) => ({ id, msgs: data.msgs || 0 }))
+            .filter(u => u.msgs > 0)
+            .sort((a, b) => b.msgs - a.msgs)
+            .slice(0, 10)
+
+        if (users.length === 0) return m.reply("📭 Nessun dato ancora registrato per questo mese.")
+
+        let top = `ㅤ⋆｡˚『 ╭ \`🏆 TOP 10 ATTIVITÀ MESE \` ╯ 』˚｡⋆\n╭\n`
+        users.forEach((u, i) => {
+            top += `│ ${i + 1}º | @${u.id.split('@')[0]} : *${u.msgs}* msg\n`
+        })
+        top += `│ ──────────────────\n`
+        top += `│ 📅 Reset tra: ${getDaysUntilNextMonth()} giorni\n`
+        top += `*╰⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*`
+        return conn.sendMessage(m.chat, { text: top, mentions: users.map(u => u.id) }, { quoted: m })
+    }
+
+    // --- COMANDO STATS (.messaggi) ---
+    let msgs = user.msgs || 0
+    let next = rewards.find(r => r.limit > msgs) || { limit: 'MAX', titolo: 'DIO' }
+    
+    let stats = `ㅤ⋆｡˚『 ╭ \`📊 I TUOI MESSAGGI \` ╯ 』˚｡⋆\n╭\n`
     stats += `│ 『 👤 』 @${who.split('@')[0]}\n`
-    stats += `│ 『 📈 』 \`Messaggi Mensili:\` *${msgs}*\n`
-    stats += `│ 『 🏆 』 \`Prossimo Grado:\` *${next.limit} msgs*\n`
+    stats += `│ 『 📈 』 \`Contatore Attivo:\` *${msgs}*\n`
+    stats += `│ 『 🏆 』 \`Prossima Soglia:\` *${next.limit}*\n`
     stats += `│ ──────────────────\n`
-    stats += `│ 📅 \`Reset tra:\` ${getDaysUntilNextMonth()} giorni\n`
+    stats += `│ 📅 \`Reset Mensile:\` Fine mese\n`
     stats += `*╰⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*`
 
-    return conn.sendMessage(m.chat, { text: stats, mentions: [who], footer }, { quoted: m })
+    const buttons = [
+        { name: 'quick_reply', buttonParamsJson: JSON.stringify({ display_text: '🏆 VEDI CLASSIFICA', id: `.topmsgs` }) }
+    ]
+    return conn.sendMessage(m.chat, { text: stats, footer, mentions: [who], interactiveButtons: buttons }, { quoted: m })
 }
 
+// --- QUESTA PARTE GIRA SEMPRE: CONTA OGNI MESSAGGIO ---
 handler.before = async function (m, { conn }) {
+    // Escludiamo messaggi dal bot stesso o fuori dai gruppi
     if (!m.isGroup || m.fromMe || !m.sender) return
     
+    // Assicuriamoci che l'utente esista nel database
     global.db.data.users[m.sender] = global.db.data.users[m.sender] || {}
     let user = global.db.data.users[m.sender]
     
-    // --- SISTEMA RESET MENSILE ---
+    // --- GESTIONE RESET MENSILE AUTOMATICO ---
     let date = new Date()
-    let currentMonth = date.getMonth() // 0-11
+    let currentMonth = date.getMonth()
     global.db.data.settings = global.db.data.settings || {}
     if (global.db.data.settings.lastResetMonth === undefined) global.db.data.settings.lastResetMonth = currentMonth
 
     if (global.db.data.settings.lastResetMonth !== currentMonth) {
-        // È iniziato un nuovo mese! Reset globale
         Object.keys(global.db.data.users).forEach(id => {
-            global.db.data.users[id].msgs = 0
-            global.db.data.users[id].achievements = global.db.data.users[id].achievements || []
-            // Rimuoviamo solo gli obiettivi legati ai messaggi per farli rifare
-            global.db.data.users[id].achievements = global.db.data.users[id].achievements.filter(a => !a.startsWith('MSG_'))
+            global.db.data.users[id].msgs = 0 // Reset messaggi
+            if (global.db.data.users[id].achievements) {
+                global.db.data.users[id].achievements = global.db.data.users[id].achievements.filter(a => !a.startsWith('MSG_'))
+            }
         })
         global.db.data.settings.lastResetMonth = currentMonth
-        conn.reply(m.chat, '📅 *NUOVO MESE INIZIATO!*\nI contatori messaggi sono stati resettati. Buona scalata a tutti! 🚀', null)
+        conn.reply(m.chat, '📅 *SISTEMA:* È iniziato un nuovo mese. Tutti i contatori messaggi sono stati resettati a zero!', null)
     }
 
-    // Incremento contatore
+    // INCREMENTO IMMEDIATO: Conta qualsiasi cosa scriva l'utente
     user.msgs = (user.msgs || 0) + 1
     user.achievements = user.achievements || []
 
-    // Controllo se ha raggiunto una soglia premio
+    // Controllo se ha sbloccato un premio in questo istante
     let currentReward = rewards.find(r => user.msgs === r.limit)
 
     if (currentReward && !user.achievements.includes('MSG_' + currentReward.limit)) {
         user.euro = (user.euro || 0) + currentReward.premio
         user.achievements.push('MSG_' + currentReward.limit)
 
-        const canvas = createCanvas(600, 350)
+        const canvas = createCanvas(600, 300)
         const ctx = canvas.getContext('2d')
-
-        // Sfondo hi-tech
-        ctx.fillStyle = '#0a0a0a'; ctx.fillRect(0, 0, 600, 350)
-        ctx.strokeStyle = '#00ffff'; ctx.lineWidth = 8; ctx.strokeRect(20, 20, 560, 310)
-
-        // Testo Titolo
-        ctx.fillStyle = '#00ffff'; ctx.font = 'bold 45px Arial'; ctx.textAlign = 'center'
+        ctx.fillStyle = '#0a0a0a'; ctx.fillRect(0, 0, 600, 300)
+        ctx.strokeStyle = '#00ffcc'; ctx.lineWidth = 10; ctx.strokeRect(10, 10, 580, 280)
+        ctx.fillStyle = '#00ffcc'; ctx.font = 'bold 40px Arial'; ctx.textAlign = 'center'
         ctx.fillText(currentReward.titolo, 300, 100)
-
-        // Barra di caricamento piena
-        ctx.fillStyle = '#1a1a1a'; ctx.fillRect(100, 150, 400, 30)
-        ctx.fillStyle = '#00ffff'; ctx.fillRect(100, 150, 400, 30)
-
-        // Ricompensa
         ctx.fillStyle = '#ffffff'; ctx.font = '30px Arial'
-        ctx.fillText(`${user.msgs} MESSAGGI COMPLETATI`, 300, 230)
-        ctx.fillStyle = '#ffcc00'; ctx.font = 'bold 35px Arial'
-        ctx.fillText(`+${currentReward.premio}€`, 300, 290)
-
-        let cap = `ㅤ⋆｡˚『 ╭ \`🏆 TRAGUARDO SBLOCCATO \` ╯ 』˚｡⋆\n╭\n`
-        cap += `│ 『 👤 』 @${m.sender.split('@')[0]}\n`
-        cap += `│ 『 📈 』 \`Messaggi:\` *${user.msgs}*\n`
-        cap += `│ 『 🏆 』 \`Nuovo Grado:\` *${currentReward.titolo}*\n`
-        cap += `│ ──────────────────\n`
-        cap += `│ 『 💬 』 _${currentReward.commento}_\n`
-        cap += `│ 『 🎁 』 \`Bonus Accreditato:\` *+${currentReward.premio} Euro*\n`
-        cap += `*╰⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*`
+        ctx.fillText(`${user.msgs} MESSAGGI INVIATI`, 300, 180)
+        ctx.fillStyle = '#ffcc00'; ctx.fillText(`PREMIO: +${currentReward.premio}€`, 300, 250)
 
         await conn.sendMessage(m.chat, { 
             image: canvas.toBuffer(), 
-            caption: cap, 
-            footer, 
+            caption: `🏆 Complimenti @${m.sender.split('@')[0]}! Hai raggiunto il grado *${currentReward.titolo}*!`, 
             mentions: [m.sender] 
         }, { quoted: m })
     }
@@ -108,13 +112,12 @@ handler.before = async function (m, { conn }) {
 function getDaysUntilNextMonth() {
     let now = new Date()
     let nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1)
-    let diff = nextMonth - now
-    return Math.ceil(diff / (1000 * 60 * 60 * 24))
+    return Math.ceil((nextMonth - now) / (1000 * 60 * 60 * 24))
 }
 
-handler.help = ['messaggi']
+handler.help = ['messaggi', 'topmsgs']
 handler.tags = ['giochi']
-handler.command = /^(messaggi|msgs|stats|obiettivi)$/i
+handler.command = /^(messaggi|msgs|stats|topmsgs|classifica)$/i
 handler.group = true
 
 export default handler
