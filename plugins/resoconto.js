@@ -1,4 +1,4 @@
-// plug-in di blood 
+// plug-in di blood - Versione Ottimizzata (Spam & Sticker Ready)
 let handler = async (m, { conn }) => {
   let chatId = m.chat;
   let dati = global.db.data.chats[chatId]?.statsGiornaliere;
@@ -27,43 +27,53 @@ let handler = async (m, { conn }) => {
   await conn.sendMessage(chatId, { text: report }, { quoted: m });
 };
 
-// --- REGISTRAZIONE MESSAGGI ---
+// --- REGISTRAZIONE MESSAGGI (OTTIMIZZATA PER SPAM E STICKER) ---
 handler.before = async function (m) {
-  if (!m.chat || !m.text || m.isBaileys || !m.isGroup) return; 
+  // Rimosso il controllo m.text per contare sticker, immagini e file
+  if (!m.chat || m.isBaileys || !m.isGroup) return; 
 
   if (!global.db.data.chats[m.chat]) global.db.data.chats[m.chat] = {};
-  if (!global.db.data.chats[m.chat].statsGiornaliere) {
-    global.db.data.chats[m.chat].statsGiornaliere = { totali: 0, utenti: {}, data: new Date().toLocaleDateString('it-IT') };
+  
+  let oggi = new Date().toLocaleDateString('it-IT');
+  
+  // Inizializzazione se non esiste o se è un nuovo giorno
+  if (!global.db.data.chats[m.chat].statsGiornaliere || global.db.data.chats[m.chat].statsGiornaliere.data !== oggi) {
+    global.db.data.chats[m.chat].statsGiornaliere = { 
+        totali: 0, 
+        utenti: {}, 
+        data: oggi 
+    };
   }
 
   let stats = global.db.data.chats[m.chat].statsGiornaliere;
-  let oggi = new Date().toLocaleDateString('it-IT');
 
-  if (stats.data !== oggi) return; 
-
+  // Conta tutto: messaggi di testo, sticker, media, etc.
   stats.totali += 1;
+  
   let nome = m.pushName || 'Utente';
   if (!stats.utenti[m.sender]) {
     stats.utenti[m.sender] = { nome: nome, conteggio: 0 };
   }
   stats.utenti[m.sender].conteggio += 1;
+  
+  return true; // Importante per non bloccare altri plugin
 };
 
-// --- AUTOMAZIONE MEZZANOTTE CON TAG E PREMI ---
+// --- AUTOMAZIONE MEZZANOTTE ---
 let isResetting = false; 
 setInterval(async () => {
-    let ora = new Date().getHours();
-    let minuti = new Date().getMinutes();
+    let d = new Date();
+    let ora = d.getHours();
+    let minuti = d.getMinutes();
 
     if (ora === 0 && minuti === 0 && !isResetting) {
         isResetting = true; 
         let chats = global.db.data.chats;
-        
+
         for (let gid in chats) {
             let dati = chats[gid]?.statsGiornaliere;
             if (!dati || dati.totali === 0) continue;
 
-            // 1. CALCOLO CLASSIFICA E PREMI
             let classifica = Object.entries(dati.utenti)
                 .sort(([, a], [, b]) => b.conteggio - a.conteggio)
                 .slice(0, 3);
@@ -76,14 +86,13 @@ setInterval(async () => {
             reportFinal += `🏆 *PODIO E PREMI:* \n`;
 
             const medaglie = ['🥇', '🥈', '🥉'];
-            const premi = [1000, 500, 250]; // Soldi per 1°, 2° e 3° posto
+            const premi = [2000, 100, 500]; 
             let mentions = [];
 
             classifica.forEach(([jid, u], i) => {
-                let premio = premi[i];
+                let premio = premi[i] || 0;
                 mentions.push(jid);
-                
-                // Accredito soldi nel database utenti
+
                 if (!global.db.data.users[jid]) global.db.data.users[jid] = { money: 0 };
                 global.db.data.users[jid].money += premio;
 
@@ -94,19 +103,11 @@ setInterval(async () => {
             reportFinal += `──────────────────\n`;
             reportFinal += `✨ *Premi accreditati. Il database è stato resettato!*`;
 
-            // 2. INVIO CON TAG
             try {
-                if (global.conn) {
-                    await global.conn.sendMessage(gid, { 
-                        text: reportFinal, 
-                        mentions: mentions 
-                    });
-                }
-            } catch (e) {
-                console.error(`Errore invio a ${gid}:`, e);
-            }
+                await global.conn.sendMessage(gid, { text: reportFinal, mentions: mentions });
+            } catch (e) { console.error(e) }
 
-            // 3. RESET
+            // Reset dopo l'invio
             chats[gid].statsGiornaliere = { 
                 totali: 0, 
                 utenti: {}, 
