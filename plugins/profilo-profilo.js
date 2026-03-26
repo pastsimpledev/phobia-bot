@@ -110,30 +110,30 @@ let handler = async (m, { conn, usedPrefix }) => {
     let partnerMention = marriages[who] ? `@${marriages[who].split('@')[0]}` : 'Single 🔓'
     let mentions = marriages[who] ? [who, marriages[who]] : [who]
 
-    let profileBox = `╔══════〔 **𝐏𝐑𝐎𝐅𝐈𝐋𝐎 𝐔𝐓𝐄𝐍𝐓𝐄** 〕══════╗
+    let profileBox = `╔══════〔 *PROFILO UTENTE* 〕══════╗
 ║
-║  ✨ **𝐒𝐓𝐀𝐓𝐈𝐒𝐓𝐈𝐂𝐇𝐄**
-║  • 🪙 **Euro:** *${formatNumber(user.euro)}*
-║  • 🏅 **Livello:** *${currentLevel}*
-║  • 🧪 **Exp:** *${formatNumber(user.exp)} XP*
-║  • 💎 **Premium:** *${user.premium ? 'Attivo ✅' : 'Base ❌'}*
+║  ✨ *STATISTICHE*
+║  • 🪙 *Euro:* *${formatNumber(user.euro)}*
+║  • 🏅 *Livello:* *${currentLevel}*
+║  • 🧪 *Exp:* *${formatNumber(user.exp)} XP*
+║  • 💎 *Premium:* *${user.premium ? 'Attivo ✅' : 'Base ❌'}*
 ║
-║  📊 **𝐀𝐓𝐓𝐈𝐕𝐈𝐓𝐀̀**
-║  • 💬 **Messaggi (GP):** *${formatNumber(groupRank.messages)}*
-║  • 🏆 **Rank Gruppo:** *#${groupRank.rank}/${groupRank.total}*
-║  • 🌍 **Rank Global:** *#${globalRank.rank}/${globalRank.total}*
+║  📊 *ATTIVITÀ*
+║  • 💬 *Messaggi (GP):* *${formatNumber(groupRank.messages)}*
+║  • 🏆 *Rank Gruppo:* *#${groupRank.rank}/${groupRank.total}*
+║  • 🌍 *Rank Global:* *#${globalRank.rank}/${globalRank.total}*
 ║
-║  📝 **𝐈𝐍𝐅𝐎 𝐏𝐄𝐑𝐒𝐎𝐍𝐀𝐋𝐈**
-║  • 📜 **Bio:** _${user.profile.description || 'Non impostata'}_
-║  • 📍 **Città:** *${user.profile.city || 'Sconosciuta'}*
-║  • 👤 **Genere:** *${user.profile.gender || 'Non specificato'}*
-║  • 💍 **Stato:** *${user.profile.status || 'Libero/a'}*
-║  • 🥂 **Partner:** *${partnerMention}*
+║  📝 *INFO PERSONALI*
+║  • 📜 *Bio:* _${user.profile.description || 'Non impostata'}_
+║  • 📍 *Città:* *${user.profile.city || 'Sconosciuta'}*
+║  • 👤 *Genere:* *${user.profile.gender || 'Non specificato'}*
+║  • 💍 *Stato:* *${user.profile.status || 'Libero/a'}*
+║  • 🥂 *Partner:* *${partnerMention}*
 ║
-║  🎨 **𝐈𝐍𝐓𝐄𝐑𝐄𝐒𝐒𝐈**
-║  • 🎭 **Hobby:** *${user.profile.hobby || 'Non definito'}*
-║  • 🎵 **Musica:** *${user.profile.music || 'Non definita'}*
-║  • 🎮 **Gioco:** *${user.profile.game || 'Non definito'}*
+║  🎨 *INTERESSI*
+║  • 🎭 *Hobby:* *${user.profile.hobby || 'Non definito'}*
+║  • 🎵 *Musica:* *${user.profile.music || 'Non definita'}*
+║  • 🎮 *Gioco:* *${user.profile.game || 'Non definito'}*
 ║
 ╚══════════════════════╝`
 
