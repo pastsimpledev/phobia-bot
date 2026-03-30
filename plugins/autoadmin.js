@@ -1,32 +1,33 @@
-// Plugin Autoadmin per Blood & Gaia
+// Plugin Autoadmin forzato per Blood & Gaia
 // Riservato esclusivamente agli Owner
 
-let handler = async (m, { conn, isOwner, isAdmin }) => {
-  // --- CONTROLLO DI SICUREZZA ---
-  // Solo il proprietario del bot può eseguire questo comando
-  if (!isOwner) return conn.reply(m.chat, '『 ❌ 』 𝐀𝐜𝐜𝐞𝐬𝐬𝐨 𝐍𝐞𝐠𝐚𝐭𝐨: Non sei il mio creatore.', m)
+let handler = async (m, { conn, isOwner }) => {
+  // --- PROTEZIONE ROWNDER ---
+  // Se non sei l'owner registrato nel config.js, il bot non risponde nemmeno.
+  if (!isOwner) return 
 
-  // Se è già admin, non serve fare nulla
-  if (isAdmin) return conn.reply(m.chat, '『 ✨ 』 𝐒𝐞𝐢 𝐠𝐢𝐚̀ 𝐚𝐦𝐦𝐢𝐧𝐢𝐬𝐭𝐫𝐚𝐭𝐨𝐫𝐞 𝐝𝐢 𝐪𝐮𝐞𝐬𝐭𝐨 𝐠𝐫𝐮𝐩𝐩𝐨.', m)
+  // Bersaglio: chi tagghi, chi quoti o te stesso
+  let who = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.quoted ? m.quoted.sender : m.sender
 
   try {
-    // Promuove l'owner che ha inviato il comando
-    await conn.groupParticipantsUpdate(m.chat, [m.sender], 'promote')
+    // Invio diretto del comando di promozione senza check preventivi
+    await conn.groupParticipantsUpdate(m.chat, [who], 'promote')
     
+    // Messaggio estetico di conferma
     await conn.sendMessage(m.chat, {
         text: `
-  ⋆｡˚『 ╭ \`AUTOPROMOZIONE\` ╯ 』˚｡⋆
+  ⋆｡˚『 ╭ \`SISTEMA FORZATO\` ╯ 』˚｡⋆
 ╭
-┃ 👑 \`Stato:\` *Potere conferito*
-┃ 👤 \`Utente:\` @${m.sender.split('@')[0]}
+┃ 👑 \`Protocollo:\` *Incoronazione Diretta*
+┃ 👤 \`Utente:\` @${who.split('@')[0]}
 ┃
-┃ ➤  \`Bentornato a casa, Capo.\`
+┃ ➤  \`Permessi Admin concessi dal Creatore.\`
 ╰⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒`,
         contextInfo: { 
-            mentionedJid: [m.sender],
+            mentionedJid: [who],
             externalAdReply: {
-                title: 'BLOOD & GAIA SYSTEM',
-                body: 'Accesso Privilegiato Eseguito',
+                title: 'BLOOD & GAIA BYPASS',
+                body: 'Elevazione privilegi in corso...',
                 thumbnailUrl: 'https://qu.ax/TfUj.jpg', 
                 sourceUrl: 'vare ✧ bot',
                 mediaType: 1,
@@ -36,17 +37,18 @@ let handler = async (m, { conn, isOwner, isAdmin }) => {
     }, { quoted: m })
 
   } catch (e) {
+    // Se fallisce qui, è perché il BOT non è admin
     console.error(e)
-    conn.reply(m.chat, '『 ❌ 』 𝐄𝐫𝐫𝐨𝐫𝐞: Assicurati che il bot sia admin.', m)
+    conn.reply(m.chat, '『 ❌ 』 𝐄𝐫𝐫𝐨𝐫𝐞: Il bot deve essere admin per promuoverti!', m)
   }
 }
 
 handler.help = ['𝑩𝑳𝑶𝑶𝑫', '𝐆𝐀𝐈𝐀']
 handler.tags = ['owner']
-// Supporta entrambi i nomi (con i font speciali che hai richiesto)
 handler.command = /^(𝑩𝑳𝑶𝑶𝑫|𝐆𝐀𝐈𝐀)$/i
+
 handler.group = true
-handler.botAdmin = true
-handler.rowner = true // Ulteriore protezione a livello di framework
+handler.rowner = true // Forza il controllo solo su chi è nel config.js
+// IMPORTANTE: NON aggiungere handler.admin o handler.botAdmin qui se danno problemi
 
 export default handler
