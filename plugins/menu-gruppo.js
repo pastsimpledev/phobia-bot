@@ -4,6 +4,9 @@ import { xpRange } from '../lib/levelling.js'
 import moment from 'moment-timezone'
 import os from 'os'
 
+// --- PERCORSO IMMAGINE ---
+const localImg = join(process.cwd(), 'menu-gruppo.jpeg');
+
 const defaultMenu = {
   before: `
 ┎━━━━━━━━━━━━━━━━━━━┑
@@ -29,14 +32,15 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
   }
 
   try {
-    let d = new Date(new Date() + 3600000)
-    let locale = 'it'
+    await conn.sendPresenceUpdate('composing', m.chat)
+    
+    let d = new Date(new Date().getTime() + 3600000)
     let name = await conn.getName(m.sender)
     let _uptime = process.uptime() * 1000
     let uptime = clockString(_uptime)
-    
-    let user = global.db.data.users[m.sender]
-    let { level, role } = user
+
+    let user = global.db.data.users[m.sender] || {}
+    let { level, role = 'Utente' } = user
     let prems = user.premiumTime > 0 ? '𝐏𝐫𝐞𝐦𝐢𝐮𝐦' : '𝐒𝐭𝐚𝐧𝐝𝐚𝐫𝐝'
 
     let help = Object.values(global.plugins).filter(p => !p.disabled).map(p => ({
@@ -72,11 +76,10 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
 
     await m.react('🛡️')
 
+    // --- INVIO COME IMMAGINE (SOSTITUITO VIDEO) ---
     await conn.sendMessage(m.chat, {
-      video: { url: './media/menu/menu3.mp4' },
+      image: { url: localImg },
       caption: text.trim(),
-      gifPlayback: true,
-      mimetype: 'video/mp4',
       contextInfo: {
         mentionedJid: [m.sender],
         forwardedNewsletterMessageInfo: {
@@ -88,7 +91,7 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
 
   } catch (e) {
     console.error(e)
-    conn.reply(m.chat, '❌ Error in Group Module.', m)
+    conn.reply(m.chat, `❌ Errore: Assicurati che il file 'menu-gruppo.jpeg' sia presente nella cartella principale.`, m)
   }
 }
 
