@@ -25,7 +25,7 @@ const defaultMenu = {
  │ 👥 *Total Users:* %totalreg
  └───────────────────
  
- *Pannello di Controllo Interattivo:*
+ *Seleziona un modulo operativo qui sotto:*
 `.trimStart(),
   header: '      ⋆｡˚『 %category 』˚｡⋆\n╭',
   body: '*│ ➢* 『%emoji』 %cmd',
@@ -79,51 +79,53 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
 
     let text = _text.replace(new RegExp(`%(${Object.keys(replace).sort((a, b) => b.length - a.length).join('|')})`, 'g'), (_, name) => '' + replace[name]);
 
-    // --- CONFIGURAZIONE TASTI (Divisi in due blocchi per bypassare il limite di 3) ---
-    
-    // Blocco 1: Sicurezza e Divertimento
-    const buttons1 = [
-      { buttonId: _p + 'attiva', buttonText: { displayText: '🛡️ SICUREZZA' }, type: 1 },
-      { buttonId: _p + 'menugiochi', buttonText: { displayText: '🎮 GIOCHI' }, type: 1 },
-      { buttonId: _p + 'menugruppo', buttonText: { displayText: '👥 GRUPPO' }, type: 1 }
-    ]
+    // --- DEFINIZIONE DELLE 8 SEZIONI (LISTA UNIFICATA) ---
+    const sections = [
+      {
+        title: "🛡️ SISTEMA DI SICUREZZA",
+        rows: [
+          { header: "『 🛡️ 』", title: "MENU SICUREZZA", description: "Configura Antilink e Difese", id: _p + "attiva" }
+        ]
+      },
+      {
+        title: "🎮 AREA DIVERTIMENTO",
+        rows: [
+          { header: "『 🎮 』", title: "MENU GIOCHI", description: "Sfide e Classifiche", id: _p + "menugiochi" }
+        ]
+      },
+      {
+        title: "📂 TUTTI I MODULI OPERATIVI",
+        rows: [
+          { header: "『 🤖 』", title: "Menu IA", description: "Intelligenza Artificiale", id: _p + "menuia" },
+          { header: "『 👥 』", title: "Menu Gruppo", description: "Gestione membri", id: _p + "menugruppo" },
+          { header: "『 📥 』", title: "Menu Download", description: "Scarica video/musica", id: _p + "menudownload" },
+          { header: "『 🛠️ 』", title: "Menu Strumenti", description: "Utility varie", id: _p + "menustrumenti" },
+          { header: "『 ⭐ 』", title: "Menu Premium", description: "Funzioni esclusive", id: _p + "menupremium" },
+          { header: "『 👨‍💻 』", title: "Menu Creatore", description: "Comandi Owner", id: _p + "menucreatore" }
+        ]
+      }
+    ];
 
-    // Blocco 2: Utility e IA
-    const buttons2 = [
-      { buttonId: _p + 'menuia', buttonText: { displayText: '🤖 INTELLIGENZA IA' }, type: 1 },
-      { buttonId: _p + 'menudownload', buttonText: { displayText: '📥 DOWNLOAD' }, type: 1 },
-      { buttonId: _p + 'menustrumenti', buttonText: { displayText: '🛠️ STRUMENTI' }, type: 1 }
-    ]
+    // MESSAGGIO LISTA (Protocollo compatibile iPhone/Android)
+    await conn.sendList(m.chat, 
+      "💠 BLD-BOT SYSTEM", // Titolo piccolo
+      text.trim(),        // Testo principale (HUD)
+      "💠 SELEZIONA MODULO", // Testo sul tasto
+      MENU_IMAGE_URL,     // Immagine
+      sections,           // Le 8 voci
+      m
+    );
 
-    // Invio primo messaggio con Immagine e primi 3 tasti
-    await conn.sendMessage(m.chat, {
-        image: { url: MENU_IMAGE_URL },
-        caption: text.trim(),
-        footer: "SISTEMA DI PROTEZIONE E GIOCHI",
-        buttons: buttons1,
-        headerType: 4,
-        viewOnce: true
-    }, { quoted: m })
-
-    // Invio secondo messaggio (solo tasti) per le altre categorie
-    await conn.sendMessage(m.chat, {
-        text: "📂 *ALTRE CATEGORIE DISPONIBILI:*",
-        footer: "STRUMENTI E INTELLIGENZA ARTIFICIALE",
-        buttons: buttons2,
-        headerType: 1,
-        viewOnce: true
-    }, { quoted: m })
-    
-    await m.react('💠')
+    await m.react('💠');
 
   } catch (e) {
-    console.error(e)
+    console.error(e);
   }
-}
+};
 
-handler.help = ['menu']
-handler.command = ['menu', 'help']
-export default handler
+handler.help = ['menu'];
+handler.command = ['menu', 'help'];
+export default handler;
 
 function clockString(ms) {
   let h = Math.floor(ms / 3600000);
