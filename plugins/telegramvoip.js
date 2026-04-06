@@ -1,6 +1,6 @@
 import { TelegramClient, Api } from 'telegram'
 import { StringSession } from 'telegram/sessions/index.js'
-import { NewMessage, UpdateNewMessage } from 'telegram/events/index.js'
+import { NewMessage } from 'telegram/events/index.js'
 
 // --- CONFIGURAZIONE ---
 const apiId = 2040;
@@ -16,45 +16,6 @@ global.tgVoip = global.tgVoip || {
     currentButtons: [] 
 };
 
-// Funzione unica per elaborare e inviare il messaggio a WhatsApp
-const processAndSend = async (message) => {
-    if (!message) return;
-    
-    // Verifica mittente
-    const sender = await message.getSender();
-    if (sender?.username !== targetBotUsername && message.senderId?.toString() !== targetBotUsername) return;
-
-    let testoCorpo = message.message || "";
-    let listaNumerata = "";
-    let bottoniTrovati = [];
-
-    // Estrazione bottoni Inline (Ignora ReplyKeyboard fissa)
-    if (message.replyMarkup && message.replyMarkup.rows) {
-        let count = 1;
-        for (const row of message.replyMarkup.rows) {
-            for (const button of row.buttons) {
-                // Filtriamo solo i bottoni cliccabili del messaggio
-                if (button.text && !(message.replyMarkup instanceof Api.ReplyKeyboardMarkup)) {
-                    bottoniTrovati.push({ msg: message, btn: button });
-                    listaNumerata += `*${count}* - ${button.text}\n`;
-                    count++;
-                }
-            }
-        }
-    }
-
-    if (listaNumerata !== "") {
-        listaNumerata = "\n\n🔘 *OPZIONI DISPONIBILI:*\n" + listaNumerata;
-    }
-
-    global.tgVoip.currentButtons = bottoniTrovati;
-    let messaggioFinale = `🤖 *DA TELEGRAM*\n\n${testoCorpo}${listaNumerata}`;
-
-    if (global.tgVoip.conn && global.tgVoip.chatId) {
-        await global.tgVoip.conn.sendMessage(global.tgVoip.chatId, { text: messaggioFinale });
-    }
-};
-
 let handler = async (m, { conn, text }) => {
     if (m.isGroup) return;
     global.tgVoip.conn = conn;
@@ -67,17 +28,56 @@ let handler = async (m, { conn, text }) => {
         }
 
         if (!global.tgVoip.isListening) {
-            // Ascolta nuovi messaggi
-            global.tgVoip.client.addEventHandler(async (event) => {
-                await processAndSend(event.message);
-            }, new NewMessage({ incoming: true }));
-
-            // Ascolta modifiche ai messaggi (fondamentale per i bot di questo tipo)
             global.tgVoip.client.addEventHandler(async (event) => {
                 const message = event.message;
-                await processAndSend(message);
-            }, new UpdateNewMessage());
+                if (!message || !message.peerId) return;
 
+                const sender = await message.getSender();
+                const senderId = message.senderId?.toString();
+                
+                // Verifica che il messaggio provenga dal bot target
+                if (sender?.username !== targetBotUsername && senderId !== targetBotUsername) return;
+
+                let testoCorpo = message.message || "";
+                let listaNumerata = "";
+                let bottoniTrovati = [];
+
+                // 1. RILEVAMENTO CODICE 6 CIFRE
+                // Cerca un pattern di 6 numeri consecutivi (es. 123456)
+                const otpMatch = testoCorpo.match(/\b\d{6}\b/);
+                if (otpMatch) {
+                    testoCorpo = `🔑 *CODICE RICEVUTO: ${otpMatch[0]}*\n\n` + testoCorpo;
+                }
+
+                // 2. ESTRAZIONE PULSANTI
+                if (message.replyMarkup && message.replyMarkup.rows) {
+                    let count = 1;
+                    listaNumerata = "\n\n🔘 *SELEZIONA OPZIONE (Invia il numero):*\n";
+
+                    for (const row of message.replyMarkup.rows) {
+                        for (const button of row.buttons) {
+                            if (button.text && !(message.replyMarkup instanceof Api.ReplyKeyboardMarkup)) {
+                                bottoniTrovati.push({ msg: message, btn: button });
+                                listaNumerata += `*${count}* - ${button.text}\n`;
+                                count++;
+                            }
+                        }
+                    }
+                }
+
+                // Salva i bottoni correnti per permettere la selezione numerica
+                global.tgVoip.currentButtons = bottoniTrovati;
+
+                // 3. INVIO SEMPRE A WHATSAPP
+                // Inviamo il messaggio se c'è testo OPPURE se ci sono bottoni
+                if (testoCorpo.trim() !== "" || bottoniTrovati.length > 0) {
+                    let messaggioFinale = `🤖 *DA TELEGRAM*\n\n${testoCorpo}${listaNumerata}`;
+                    
+                    if (global.tgVoip.conn && global.tgVoip.chatId) {
+                        await global.tgVoip.conn.sendMessage(global.tgVoip.chatId, { text: messaggioFinale });
+                    }
+                }
+            }, new NewMessage({ incoming: true }));
             global.tgVoip.isListening = true;
         }
 
@@ -85,11 +85,12 @@ let handler = async (m, { conn, text }) => {
         await m.react('📡');
 
     } catch (e) {
-        console.error(e);
+        console.error("Errore nel comando principale:", e);
     }
 }
 
 handler.before = async (m) => {
+    // Evita loop o messaggi non pertinenti
     if (m.isGroup || !m.text || m.text.startsWith('.') || !global.tgVoip?.client) return;
     if (m.chat !== global.tgVoip.chatId) return;
 
@@ -97,25 +98,24 @@ handler.before = async (m) => {
     const numeroScelto = parseInt(input);
     const bottoni = global.tgVoip.currentButtons || [];
 
-    if (!isNaN(numeroScelto) && bottoni.length > 0) {
-        const index = numeroScelto - 1;
-        if (bottoni[index]) {
-            try {
-                const target = bottoni[index];
-                await m.react('🔘');
-                await target.msg.click(target.btn);
-                return;
-            } catch (err) {
-                console.error("Errore click:", err);
-            }
+    // Se l'utente invia un numero corrispondente a un bottone
+    if (!isNaN(numeroScelto) && bottoni.length > 0 && bottoni[numeroScelto - 1]) {
+        try {
+            const target = bottoni[numeroScelto - 1];
+            await m.react('🔘');
+            await target.msg.click(target.btn);
+            return; 
+        } catch (err) {
+            console.error("Errore durante il click del bottone:", err);
         }
     }
 
+    // Altrimenti, inoltra il testo dell'utente come messaggio normale al bot Telegram
     try {
         await global.tgVoip.client.sendMessage(targetBotUsername, { message: m.text });
         await m.react('📤');
     } catch (e) {
-        console.error(e);
+        console.error("Errore nell'inoltro del messaggio:", e);
     }
 }
 
