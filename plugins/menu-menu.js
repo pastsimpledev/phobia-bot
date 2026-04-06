@@ -35,20 +35,8 @@ const defaultMenu = {
 
 const swag = 'https://i.ibb.co/hJW7WwxV/varebot.jpg';
 
-function detectDevice(msgID) {
-  if (!msgID) return 'unknown'; 
-  if (/^[a-zA-Z]+-[a-fA-F0-9]+$/.test(msgID)) return 'bot';
-  if (msgID.startsWith('false_') || msgID.startsWith('true_')) return 'web';
-  if (msgID.startsWith('3EB0') && /^[A-Z0-9]+$/.test(msgID)) return 'web';
-  if (msgID.includes(':')) return 'desktop';
-  if (/^[A-F0-9]{32}$/i.test(msgID)) return 'android';
-  if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(msgID)) return 'ios';
-  if (/^[A-Z0-9]{20,25}$/i.test(msgID) && !msgID.startsWith('3EB0')) return 'ios';
-  return 'unknown';
-}
-
-// --- LISTA COMPLETA DI TUTTI GLI 8 MENU ---
-const allBldMenus = [
+// --- LISTA COMPLETA 8 TASTI (OWNER SOSTITUITO CON EURO) ---
+const bldButtons = [
   { title: "🛡️ SICUREZZA", command: "attiva" },
   { title: "🎮 GIOCHI", command: "menugiochi" },
   { title: "🤖 IA", command: "menuia" },
@@ -56,7 +44,7 @@ const allBldMenus = [
   { title: "📥 DOWNLOAD", command: "menudownload" },
   { title: "🛠️ STRUMENTI", command: "menustrumenti" },
   { title: "⭐ PREMIUM", command: "menupremium" },
-  { title: "👨‍💻 OWNER", command: "menucreatore" }
+  { title: "💰 EURO", command: "menueuro" }
 ];
 
 let handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
@@ -96,84 +84,25 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
 
     let replace = { '%': '%', p: _p, uptime, name, totalreg };
     let text = _text.replace(new RegExp(`%(${Object.keys(replace).sort((a, b) => b.length - a.length).join('|')})`, 'g'), (_, name) => '' + replace[name]);
-    
-    const msgID = m.id || m.key?.id;
-    const deviceType = detectDevice(msgID);
-    const isGroup = m.chat.endsWith('@g.us');
 
-    if (deviceType === 'ios') {
-      // --- VERSIONE IOS CON TUTTI GLI 8 TASTI ---
-      const buttons = allBldMenus.map(menu => ({
-        buttonId: _p + menu.command,
-        buttonText: { displayText: menu.title },
-        type: 1
-      }));
+    // --- CONFIGURAZIONE UNIVERSALE TASTI RAPIDI ---
+    const buttons = bldButtons.map(menu => ({
+      buttonId: _p + menu.command,
+      buttonText: { displayText: menu.title },
+      type: 1
+    }));
 
-      await conn.sendMessage(m.chat, {
-        image: { url: swag },
-        caption: text.trim(),
-        footer: "B L D - B O T  S Y S T E M",
-        buttons: buttons,
-        headerType: 4
-      }, { quoted: m });
+    // Invio unico per tutti i dispositivi
+    await conn.sendMessage(m.chat, {
+      image: { url: swag },
+      caption: text.trim(),
+      footer: "B L D - B O T  S Y S T E M",
+      buttons: buttons,
+      headerType: 4,
+      viewOnce: true 
+    }, { quoted: m });
 
-    } else {
-      if (isGroup) {
-        // --- VERSIONE ANDROID/GRUPPI ---
-        let thumbnailBuffer;
-        try {
-          const response = await fetch(swag);
-          thumbnailBuffer = Buffer.from(await response.arrayBuffer());
-        } catch {
-          thumbnailBuffer = Buffer.alloc(0);
-        }
-
-        await conn.sendMessage(m.chat, {
-          interactiveButtons: [{
-            name: "single_select",
-            buttonParamsJson: JSON.stringify({
-              title: "💠 APRI MODULI BLD",
-              sections: [{
-                title: "🛡️ SISTEMA OPERATIVO",
-                rows: [
-                  { id: _p + "attiva", title: "🛡️ SICUREZZA", description: "Protezione e Filtri" },
-                  { id: _p + "menugiochi", title: "🎮 GIOCHI", description: "Livelli e XP" }
-                ]
-              }, {
-                title: "📂 MODULI DISPONIBILI",
-                rows: allBldMenus.slice(2).map(m => ({
-                    id: _p + m.command,
-                    title: m.title,
-                    description: "Accedi al modulo " + m.title
-                }))
-              }]
-            })
-          }],
-          text: text.trim(),
-          footer: "𝖇𝖑𝖔𝖔𝖉𝖇𝖔𝖙",
-          media: { image: thumbnailBuffer }
-        }, { quoted: m });
-      } else {
-        // --- VERSIONE PRIVATA ---
-        const sections = [
-          {
-            title: "🛡️ SISTEMA",
-            rows: allBldMenus.slice(0, 2).map(m => ({ title: m.title, rowId: _p + m.command }))
-          },
-          {
-            title: "📂 CATEGORIE BLD",
-            rows: allBldMenus.slice(2).map(m => ({ title: m.title, rowId: _p + m.command }))
-          }
-        ];
-
-        await conn.sendMessage(m.chat, {
-          text: text.trim(),
-          footer: "𝖇𝖑𝖔𝖔𝖉𝖇𝖔𝖙",
-          buttonText: "💠 SELEZIONA",
-          sections
-        }, { quoted: m });
-      }
-    }
+    await m.react('💠');
 
   } catch (e) {
     console.error(e)
