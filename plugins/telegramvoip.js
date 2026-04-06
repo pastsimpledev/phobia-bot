@@ -1,4 +1,4 @@
-import { TelegramClient, Api } from 'telegram'
+import { TelegramClient } from 'telegram'
 import { StringSession } from 'telegram/sessions/index.js'
 import { NewMessage } from 'telegram/events/index.js'
 
@@ -34,49 +34,61 @@ let handler = async (m, { conn, text }) => {
                 const message = event.message;
                 if (!message) return;
 
-                let testata = "🤖 *RISPOSTA DA TELEGRAM*\n\n";
-                let corpo = message.message || "";
+                let testoFinale = "🤖 *RISPOSTA DA TELEGRAM*\n\n";
+                testoFinale += message.message || "";
                 
-                // --- RECUPERO BOTTONI ---
-                let pulsantiTesto = "";
-                if (message.replyMarkup && message.replyMarkup.rows) {
-                    pulsantiTesto = "\n\n🔘 *OPZIONI DISPONIBILI:*\n";
-                    for (const row of message.replyMarkup.rows) {
-                        for (const button of row.buttons) {
-                            // Estraiamo il testo di ogni pulsante
-                            pulsantiTesto += `• ${button.text}\n`;
+                // --- ESTRAZIONE PULSANTI (INLINE E KEYBOARD) ---
+                let bottoniTrovati = [];
+                
+                if (message.replyMarkup) {
+                    const markup = message.replyMarkup;
+                    // Controlliamo se ci sono righe di pulsanti
+                    if (markup.rows && markup.rows.length > 0) {
+                        for (const row of markup.rows) {
+                            for (const button of row.buttons) {
+                                // Prendiamo il testo visibile sul pulsante
+                                if (button.text) {
+                                    bottoniTrovati.push(`🔹 ${button.text}`);
+                                }
+                            }
                         }
                     }
                 }
 
+                if (bottoniTrovati.length > 0) {
+                    testoFinale += "\n\n🔘 *OPZIONI DISPONIBILI:*\n";
+                    testoFinale += bottoniTrovati.join("\n");
+                    testoFinale += "\n\n_Scrivi il nome esatto dell'opzione per sceglierla._";
+                }
+
                 if (global.tgVoip.conn && global.tgVoip.chatId) {
-                    await global.tgVoip.conn.sendMessage(global.tgVoip.chatId, { 
-                        text: testata + corpo + pulsantiTesto 
-                    });
+                    await global.tgVoip.conn.sendMessage(global.tgVoip.chatId, { text: testoFinale });
                 }
             }, new NewMessage({ incoming: true }));
             global.tgVoip.isListening = true;
         }
 
-        const toSend = text ? text : "/start";
-        await global.tgVoip.client.sendMessage(targetBotUsername, { message: toSend });
+        const comando = text ? text : "/start";
+        await global.tgVoip.client.sendMessage(targetBotUsername, { message: comando });
         await m.react('📡');
 
     } catch (e) {
         console.error(e);
-        m.reply("❌ Errore connessione.");
+        m.reply("❌ Errore di connessione a Telegram.");
     }
 }
 
 handler.before = async (m) => {
+    // Evita loop o comandi che iniziano con punto
     if (m.isGroup || !m.text || m.text.startsWith('.') || !global.tgVoip.client) return;
+    
     if (m.chat === global.tgVoip.chatId) {
         try {
-            // Inviamo il testo scritto su WhatsApp direttamente al bot
+            // Inoltra quello che scrivi su WhatsApp al bot di Telegram
             await global.tgVoip.client.sendMessage(targetBotUsername, { message: m.text });
             await m.react('📤');
         } catch (e) {
-            console.error(e);
+            console.error("Errore invio a TG:", e);
         }
     }
 }
