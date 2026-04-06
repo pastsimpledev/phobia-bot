@@ -1,5 +1,8 @@
 import { xpRange } from '../lib/levelling.js'
-import moment from 'moment-timezone'
+import { join } from 'path'
+
+// --- PERCORSO IMMAGINE ---
+const localImg = join(process.cwd(), 'menu-premium.jpeg');
 
 const defaultMenu = {
   before: `
@@ -26,14 +29,16 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
   }
 
   try {
-    let user = global.db.data.users[m.sender]
-    let { level, role } = user
+    await conn.sendPresenceUpdate('composing', m.chat)
+    
+    let user = global.db.data.users[m.sender] || {}
+    let { level = 0, role = 'User' } = user
     let name = await conn.getName(m.sender)
     let _uptime = process.uptime() * 1000
     let uptime = clockString(_uptime)
-    
+
     // Filtraggio plugin premium
-    let help = Object.values(global.plugins).filter(p => !p.disabled && p.tags && (p.tags.includes('premium') || p.tags.includes('prem'))).map(p => ({
+    let help = Object.values(global.plugins).filter(p => !p.disabled && p.tags && (p.tags.includes('premium') || p.tags.includes('prem') || p.tags.includes('premio'))).map(p => ({
       help: Array.isArray(p.help) ? p.help : [p.help],
       prefix: 'customPrefix' in p,
     }))
@@ -58,11 +63,10 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
 
     await m.react('⭐')
 
+    // --- INVIO COME IMMAGINE (SOSTITUITO VIDEO) ---
     await conn.sendMessage(m.chat, {
-      video: { url: './media/menu/menu9.mp4' },
+      image: { url: localImg },
       caption: text.trim(),
-      gifPlayback: true,
-      mimetype: 'video/mp4',
       contextInfo: {
         mentionedJid: [m.sender],
         forwardedNewsletterMessageInfo: {
@@ -74,7 +78,7 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
 
   } catch (e) {
     console.error(e)
-    conn.reply(m.chat, '❌ Error in Premium Module.', m)
+    conn.reply(m.chat, '❌ Errore nel caricamento del modulo Premium. Verifica menu-premium.jpeg.', m)
   }
 }
 
