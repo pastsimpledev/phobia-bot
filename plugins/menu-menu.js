@@ -99,22 +99,22 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
     } else {
       const sections = [
         {
-          title: "💀 PROTOCOLLI ELITE 💀",
+          title: "⭐ Menu Consigliati ⭐",
           rows: [
-            { header: "『 🤖 』", title: "Invasione IA", description: "Moduli Intelligenza Artificiale", id: _p + "menuia" },
-            { header: "『 💎 』", title: "Accesso Root", description: "Funzioni Premium", id: _p + "menupremium" }
+            { header: "『 🤖 』", title: "Menu IA", description: "Intelligenza Artificiale", id: _p + "menuia" },
+            { header: "『 ⭐ 』", title: "Menu Premium", description: "Funzionalità Premium", id: _p + "menupremium" }
           ]
         },
         {
-          title: "💉 SETTORI DI SISTEMA",
+          title: "📂 Tutte le Categorie",
           rows: [
-            { header: "『 🛠️ 』", title: "Laboratorio", description: "Strumenti e utilità", id: _p + "menustrumenti" },
-            { header: "『 💰 』", title: "Banca Nera", description: "Economia e Euro", id: _p + "menueuro" },
-            { header: "『 🎮 』", title: "Arena Giochi", description: "Distrazione e Games", id: _p + "menugiochi" },
-            { header: "『 👥 』", title: "Gestione Clan", description: "Comandi Gruppo", id: _p + "menugruppo" },
-            { header: "『 🔍 』", title: "Deep Scan", description: "Ricerche online", id: _p + "menuricerche" },
-            { header: "『 📥 』", title: "Extractor", description: "Download contenuti", id: _p + "menudownload" },
-            { header: "『 👨‍💻 』", title: "Master Admin", description: "Comandi Owner", id: _p + "menucreatore" }
+            { header: "『 🛠️ 』", title: "Menu Strumenti", description: "Utilità e tools", id: _p + "menustrumenti" },
+            { header: "『 💰 』", title: "Menu Euro", description: "Sistema economico", id: _p + "menueuro" },
+            { header: "『 🎮 』", title: "Menu Giochi", description: "Games e divertimento", id: _p + "menugiochi" },
+            { header: "『 👥 』", title: "Menu Gruppo", description: "Gestione gruppi", id: _p + "menugruppo" },
+            { header: "『 🔍 』", title: "Menu Ricerche", description: "Ricerca online", id: _p + "menuricerche" },
+            { header: "『 📥 』", title: "Menu Download", description: "Scarica contenuti", id: _p + "menudownload" },
+            { header: "『 👨‍💻 』", title: "Menu Creatore", description: "Comandi owner", id: _p + "menucreatore" }
           ]
         }
       ];
@@ -159,7 +159,7 @@ function detectDevice(msgID) {
 function getRandomMenus() {
   const allMenus = [
     { title: "🤖 Menu IA", command: "menuia" },
-    { title: "💎 Menu Premium", command: "menupremium" },
+    { title: "⭐ Menu Premium", command: "menupremium" },
     { title: "🛠️ Menu Strumenti", command: "menustrumenti" },
     { title: "💰 Menu Euro", command: "menueuro" },
     { title: "🎮 Menu Giochi", command: "menugiochi" },
