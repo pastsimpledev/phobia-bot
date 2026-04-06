@@ -35,19 +35,6 @@ const defaultMenu = {
 
 const MENU_IMAGE_URL = 'https://i.ibb.co/hJW7WwxV/varebot.jpg';
 
-// Funzione per rilevare il dispositivo
-function detectDevice(msgID) {
-  if (!msgID) return 'unknown'; 
-  if (/^[a-zA-Z]+-[a-fA-F0-9]+$/.test(msgID)) return 'bot';
-  if (msgID.startsWith('false_') || msgID.startsWith('true_')) return 'web';
-  if (msgID.startsWith('3EB0') && /^[A-Z0-9]+$/.test(msgID)) return 'web';
-  if (msgID.includes(':')) return 'desktop';
-  if (/^[A-F0-9]{32}$/i.test(msgID)) return 'android';
-  if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(msgID)) return 'ios';
-  if (/^[A-Z0-9]{20,25}$/i.test(msgID) && !msgID.startsWith('3EB0')) return 'ios';
-  return 'unknown';
-}
-
 let handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
   try {
     let name = await conn.getName(m.sender) || 'User';
@@ -85,54 +72,53 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
     let replace = { '%': '%', p: _p, uptime, name, totalreg };
     let text = _text.replace(new RegExp(`%(${Object.keys(replace).sort((a, b) => b.length - a.length).join('|')})`, 'g'), (_, name) => '' + replace[name]);
 
-    const msgID = m.id || m.key?.id;
-    const deviceType = detectDevice(msgID);
-
-    // Definizione di tutti i tasti (8 Sezioni)
-    const allMenuRows = [
-      { id: _p + "attiva", title: "🛡️ Menu Sicurezza", description: "Antilink e Protezioni" },
-      { id: _p + "menugiochi", title: "🎮 Menu Giochi", description: "Divertimento e Sfide" },
-      { id: _p + "menuia", title: "🤖 Menu IA", description: "Intelligenza Artificiale" },
-      { id: _p + "menugruppo", title: "👥 Menu Gruppo", description: "Gestione del Gruppo" },
-      { id: _p + "menudownload", title: "📥 Menu Download", description: "Social Downloader" },
-      { id: _p + "menustrumenti", title: "🛠️ Menu Strumenti", description: "Utility e Tools" },
-      { id: _p + "menupremium", title: "⭐ Menu Premium", description: "Funzioni Esclusive" },
-      { id: _p + "menucreatore", title: "👨‍💻 Menu Creatore", description: "Pannello Owner" }
+    // CONFIGURAZIONE BOTTONI NATIVI (FUNZIONANO SU IOS)
+    const sections = [
+      {
+        title: "🛡️ SICUREZZA & GIOCHI",
+        rows: [
+          { title: "🛡️ Menu Sicurezza", id: _p + "attiva" },
+          { title: "🎮 Menu Giochi", id: _p + "menugiochi" }
+        ]
+      },
+      {
+        title: "📂 MODULI OPERATIVI",
+        rows: [
+          { title: "🤖 Menu IA", id: _p + "menuia" },
+          { title: "👥 Menu Gruppo", id: _p + "menugruppo" },
+          { title: "📥 Menu Download", id: _p + "menudownload" },
+          { title: "🛠️ Menu Strumenti", id: _p + "menustrumenti" },
+          { title: "⭐ Menu Premium", id: _p + "menupremium" },
+          { title: "👨‍💻 Menu Creatore", id: _p + "menucreatore" }
+        ]
+      }
     ];
 
-    if (deviceType === 'ios') {
-      // Per iPhone usiamo i Buttons fisici (Massimo 5 per stabilità)
-      const buttons = allMenuRows.slice(0, 5).map(menu => ({
-        buttonId: menu.id,
-        buttonText: { displayText: menu.title },
-        type: 1
-      }));
+    let message = {
+      image: { url: MENU_IMAGE_URL },
+      caption: text.trim(),
+      footer: "B L D  S Y S T E M",
+      buttons: [
+        {
+          name: "single_select",
+          buttonParamsJson: JSON.stringify({
+            title: "💠 APRI MENU COMPLETO",
+            sections: sections
+          })
+        }
+      ],
+      headerType: 4,
+      viewOnce: true
+    };
 
-      await conn.sendMessage(m.chat, {
-        image: { url: MENU_IMAGE_URL },
-        caption: text.trim(),
-        footer: "B L D - B O T  S Y S T E M",
-        buttons: buttons,
-        headerType: 4,
-        viewOnce: true
-      }, { quoted: m });
-
-    } else {
-      // Per Android/Web usiamo la lista interattiva completa
-      await conn.sendList(m.chat, 
-        "💠 BLD-BOT SYSTEM", 
-        text.trim(), 
-        "💠 SELEZIONA MODULO", 
-        MENU_IMAGE_URL, 
-        [{ title: "TUTTI I MODULI OPERATIVI", rows: allMenuRows }], 
-        m
-      );
-    }
-
+    // Invio forzato come messaggio interattivo (Nuovo Protocollo)
+    await conn.sendMessage(m.chat, message, { quoted: m });
     await m.react('💠');
 
   } catch (e) {
     console.error(e);
+    // Se fallisce ancora, manda testo semplice con link cliccabili come emergenza
+    conn.reply(m.chat, "Errore nel caricamento del menu interattivo.", m);
   }
 };
 
