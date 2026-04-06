@@ -25,12 +25,22 @@ const defaultMenu = {
  │ 👥 *Total Users:* %totalreg
  └───────────────────
  
- *Seleziona un'interfaccia operativa:*
+ *DIGITA I COMANDI PER ACCEDERE:*
 `.trimStart(),
   header: '      ⋆｡˚『 %category 』˚｡⋆\n╭',
   body: '*│ ➢* 『%emoji』 %cmd',
   footer: '*╰━━━━━━━──────━━━━━━━*\n',
-  after: `_Powered by BLD-BOT Interface_`,
+  after: `
+*┍━━━━━〔 📂 SEZIONI 〕━━━━━┑*
+┇ 🛡️ *.%pattiva* (Sicurezza)
+┇ 🎮 *.%pmenugiochi* (Giochi)
+┇ 🤖 *.%pmenuia* (IA)
+┇ 👥 *.%pmenugruppo* (Gruppo)
+┇ 🛠️ *.%pmenustrumenti* (Tools)
+┇ 👨‍💻 *.%pmenucreatore* (Owner)
+*┕━━━━━━━──ׄ──ׅ──ׄ──━━━━━━━┙*
+
+_Powered by BLD-BOT Interface_`,
 }
 
 const MENU_IMAGE_URL = 'https://i.ibb.co/hJW7WwxV/varebot.jpg';
@@ -79,48 +89,22 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
 
     let text = _text.replace(new RegExp(`%(${Object.keys(replace).sort((a, b) => b.length - a.length).join('|')})`, 'g'), (_, name) => '' + replace[name]);
 
-    const msgID = m.id || m.key?.id;
-    const deviceType = detectDevice(msgID);
-
-    if (deviceType === 'ios') {
-      const buttons = [
-        { buttonId: _p + 'attiva', buttonText: { displayText: '🛡️ Sicurezza' }, type: 1 },
-        { buttonId: _p + 'menugiochi', buttonText: { displayText: '🎮 Giochi' }, type: 1 },
-        { buttonId: _p + 'menugruppo', buttonText: { displayText: '👥 Gruppo' }, type: 1 }
-      ];
-
-      await conn.sendMessage(m.chat, {
-        image: { url: MENU_IMAGE_URL },
-        caption: text.trim(),
-        footer: "BLD-BOT CENTRAL SYSTEM",
-        buttons: buttons,
-        headerType: 4
-      }, { quoted: m });
-
-    } else {
-      const sections = [
-        {
-          title: "🛡️ SISTEMA DI PROTEZIONE",
-          rows: [
-            { header: "『 🛡️ 』", title: "MENU SICUREZZA", description: "Configura Antilink, Antispam e Difese", id: _p + "attiva" }
-          ]
-        },
-        {
-          title: "📂 CATEGORIE OPERATIVE",
-          rows: [
-            { header: "『 🎮 』", title: "Menu Giochi", description: "Sfide, Divertimento e Classifiche", id: _p + "menugiochi" }, // AGGIUNTO
-            { header: "『 🤖 』", title: "Menu IA", description: "Interazione con Intelligenza Artificiale", id: _p + "menuia" },
-            { header: "『 ⭐ 』", title: "Menu Premium", description: "Comandi esclusivi per utenti Premium", id: _p + "menupremium" },
-            { header: "『 🛠️ 』", title: "Menu Strumenti", description: "Utility, Loghi e strumenti vari", id: _p + "menustrumenti" },
-            { header: "『 👥 』", title: "Menu Gruppo", description: "Comandi per la gestione del gruppo", id: _p + "menugruppo" },
-            { header: "『 📥 』", title: "Menu Download", description: "Scarica video e musica dai Social", id: _p + "menudownload" },
-            { header: "『 👨‍💻 』", title: "Menu Creatore", description: "Pannello riservato all'Owner", id: _p + "menucreatore" }
-          ]
+    // INVIO UNIFICATO (Fix per iOS/Android/PC)
+    await conn.sendMessage(m.chat, {
+      image: { url: MENU_IMAGE_URL },
+      caption: text.trim(),
+      contextInfo: {
+        externalAdReply: {
+          title: "💠 𝐁𝐋𝐃 - 𝐂𝐄𝐍𝐓𝐑𝐀𝐋 𝐇𝐔𝐁 💠",
+          body: "SISTEMA OPERATIVO ATTIVO",
+          mediaType: 1,
+          renderLargerThumbnail: true,
+          thumbnailUrl: MENU_IMAGE_URL,
+          sourceUrl: 'https://whatsapp.com/channel/0029Vajp6GvK0NBoP7WlR81G'
         }
-      ];
+      }
+    }, { quoted: m });
 
-      await conn.sendList(m.chat, "", text.trim(), "💠 SELEZIONA MODULO", MENU_IMAGE_URL, sections, m);
-    }
     await m.react('💠');
   } catch (e) {
     console.error(e);
@@ -130,11 +114,6 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
 handler.help = ['menu'];
 handler.command = ['menu', 'help'];
 export default handler;
-
-function detectDevice(msgID) {
-    if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(msgID)) return 'ios';
-    return 'android';
-}
 
 function clockString(ms) {
   let h = Math.floor(ms / 3600000);
