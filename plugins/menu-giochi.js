@@ -5,23 +5,34 @@ import moment from 'moment-timezone'
 import os from 'os'
 
 const defaultMenu = {
-  before: ``.trimStart(),
-  header: 'ㅤㅤ⋆｡˚『 ╭ `MENU GIOCHI` ╯ 』˚｡⋆\n╭',
-  body: '│ ➤『🎮』 %cmd\n',
-  footer: '*╰⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*\n',
-  after: ``,
+  before: `
+╔════════════════════╗
+  🎮  *G A M E  C E N T E R* 🎮
+╚════════════════════╝
+ ┌───────────────────
+ │ 👤 *Utente:* %name
+ │ 🏆 *Livello:* %level
+ │ 💰 *Eris:* %eris
+ │ 🎖️ *Rango:* %role
+ └───────────────────
+ 
+ *Seleziona una sfida:*
+`.trimStart(),
+  header: '╭──〔 %category 〕──✦',
+  body: '│ 🕹️  %cmd %islimit%isPremium',
+  footer: '╰───────────────━━━━\n',
+  after: `_Usa %p [comando] per giocare_`,
 }
 
 let handler = async (m, { conn, usedPrefix: _p, __dirname, args, command }) => {
-  let tags = { 'giochi': 'Giochi' }
+  let tags = { 'giochi': 'GIOCHI DISPONIBILI' }
 
   try {
     // ----------------- DATI BASE -----------------
-    let d = new Date(new Date() + 3600000)
+    let d = new Date(new Date().getTime() + 3600000)
     let locale = 'it'
     let week = d.toLocaleDateString(locale, { weekday: 'long' })
     let date = d.toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' })
-    let weton = ['Pahing', 'Pon', 'Wage', 'Kliwon', 'Legi'][Math.floor(d / 84600000) % 5]
     let dateIslamic = Intl.DateTimeFormat(locale + '-TN-u-ca-islamic', { day: 'numeric', month: 'long', year: 'numeric' }).format(d)
     let time = d.toLocaleTimeString(locale, { hour: 'numeric', minute: 'numeric', second: 'numeric' })
     let _uptime = process.uptime() * 1000
@@ -47,7 +58,6 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname, args, command }) => {
     let { min, xp, max } = xpRange(level, global.multiplier || 1)
     let name = await conn.getName(m.sender)
     let prems = premiumTime > 0 ? '💎 Premium' : '👤 Utente comune'
-    let platform = os.platform()
     let totalreg = Object.keys(global.db.data.users).length
     let rtotalreg = Object.values(global.db.data.users).filter(u => u.registered).length
 
@@ -55,7 +65,7 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname, args, command }) => {
     let help = Object.values(global.plugins)
       .filter(p => !p.disabled)
       .map(p => ({
-        help: Array.isArray(p.tags) ? p.help : [p.help],
+        help: Array.isArray(p.help) ? p.help : [p.help],
         tags: Array.isArray(p.tags) ? p.tags : [p.tags],
         prefix: 'customPrefix' in p,
         limit: p.limit,
@@ -66,7 +76,7 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname, args, command }) => {
     // raggruppa plugin per tag
     let groups = {}
     for (let tag in tags) {
-      groups[tag] = help.filter(menu => menu.tags && menu.tags.includes(tag) && menu.help)
+      groups[tag] = help.filter(menu => menu.tags && menu.tags.includes(tag) && menu.help[0])
     }
 
     // ----------------- COSTRUZIONE MENU -----------------
@@ -84,9 +94,9 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname, args, command }) => {
             ...groups[tag].map(menu =>
               menu.help.map(cmd => body
                 .replace(/%cmd/g, menu.prefix ? cmd : _p + cmd)
-                .replace(/%islimit/g, menu.limit ? '⚠️ Limitato' : '')
-                .replace(/%isPremium/g, menu.premium ? '💎 Premium' : '')
-                .trim()
+                .replace(/%islimit/g, menu.limit ? ' ⚠️' : '')
+                .replace(/%isPremium/g, menu.premium ? ' 💎' : '')
+                .trimEnd()
               ).join('\n')
             ),
             footer
@@ -111,8 +121,8 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname, args, command }) => {
       totalexp: exp,
       xp4levelup: max - exp,
       wib, mode, _p, eris, age, name, prems, level, limit,
-      weton, week, date, dateIslamic, time, totalreg, rtotalreg, role,
-      readMore // corretto qui
+      week, date, dateIslamic, time, totalreg, rtotalreg, role,
+      readMore
     }
 
     text = text.replace(new RegExp(`%(${Object.keys(replace).sort((a, b) => b.length - a.length).join('|')})`, 'g'), (_, name) => '' + replace[name])
@@ -131,7 +141,6 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname, args, command }) => {
   }
 }
 
-// ------------------- HANDLER -------------------
 handler.help = ['menugiochi']
 handler.tags = ['menu']
 handler.command = ['menugiochi', 'menugame']
@@ -148,13 +157,4 @@ function clockString(ms) {
   let m = Math.floor(ms / 60000) % 60
   let s = Math.floor(ms / 1000) % 60
   return [h, ' H ', m, ' M ', s, ' S '].map(v => v.toString().padStart(2, '0')).join('')
-}
-
-function ucapan() {
-  const time = moment.tz('Europe/Rome').format('HH')
-  if (time >= 18) return "Sera 🌙"
-  if (time >= 15) return "Pomeriggio 🌇"
-  if (time >= 10) return "Mattina ☀️"
-  if (time >= 4) return "Mattina 🌄"
-  return "Sveglio così presto? 🥱"
 }
