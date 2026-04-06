@@ -72,68 +72,29 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
     let replace = { '%': '%', p: _p, uptime, name, totalreg };
     let text = _text.replace(new RegExp(`%(${Object.keys(replace).sort((a, b) => b.length - a.length).join('|')})`, 'g'), (_, name) => '' + replace[name]);
 
-    // --- COSTRUZIONE BOTTONI NATIVI (VISIBILI SU IOS) ---
-    const buttons = [
-      {
-        name: 'single_select',
-        buttonParamsJson: JSON.stringify({
-          title: '💠 APRI MODULI',
-          sections: [
-            {
-              title: "🛡️ PROTEZIONE & GIOCHI",
-              rows: [
-                { title: "🛡️ MENU SICUREZZA", id: _p + "attiva" },
-                { title: "🎮 MENU GIOCHI", id: _p + "menugiochi" }
-              ]
-            },
-            {
-              title: "🤖 INTELLIGENZA & GRUPPO",
-              rows: [
-                { title: "🤖 MENU IA", id: _p + "menuia" },
-                { title: "👥 MENU GRUPPO", id: _p + "menugruppo" }
-              ]
-            },
-            {
-              title: "📥 DOWNLOAD & TOOLS",
-              rows: [
-                { title: "📥 MENU DOWNLOAD", id: _p + "menudownload" },
-                { title: "🛠️ MENU STRUMENTI", id: _p + "menustrumenti" }
-              ]
-            },
-            {
-              title: "👑 PREMIUM & OWNER",
-              rows: [
-                { title: "⭐ MENU PREMIUM", id: _p + "menupremium" },
-                { title: "👨‍💻 MENU CREATORE", id: _p + "menucreatore" }
-              ]
-            }
-          ]
-        })
-      }
+    // --- TEMPLATE BUTTONS (UNICO FORMATO COMPATIBILE IOS 2024/2025) ---
+    // Inseriamo i primi 5 menu come tasti rapidi (limite iOS per visualizzazione corretta)
+    // E aggiungiamo un tasto "Vedi Altri" o la lista testuale per gli altri 3
+    const templateButtons = [
+      { index: 1, quickReplyButton: { displayText: '🛡️ SICUREZZA', id: _p + 'attiva' } },
+      { index: 2, quickReplyButton: { displayText: '🎮 GIOCHI', id: _p + 'menugiochi' } },
+      { index: 3, quickReplyButton: { displayText: '🤖 IA', id: _p + 'menuia' } },
+      { index: 4, quickReplyButton: { displayText: '👥 GRUPPO', id: _p + 'menugruppo' } },
+      { index: 5, quickReplyButton: { displayText: '📥 DOWNLOAD', id: _p + 'menudownload' } }
     ];
 
-    // Messaggio Interattivo Nativo
-    const msg = {
-        viewOnceMessage: {
-            message: {
-                interactiveMessage: {
-                    header: {
-                        hasVideoMessage: false,
-                        hasCards: false,
-                        imageMessage: (await conn.getFile(MENU_IMAGE_URL)).data,
-                        title: ""
-                    },
-                    body: { text: text.trim() },
-                    footer: { text: "𝖇𝖑𝖔𝖔𝖉𝖇𝖔𝖙" },
-                    nativeFlowMessage: {
-                        buttons: buttons
-                    }
-                }
-            }
-        }
-    };
+    // Se vuoi proprio TUTTI gli 8 menu, iOS spesso taglia dopo i primi 5. 
+    // Per sicurezza aggiungiamo il richiamo testuale degli ultimi 3 nel corpo del testo
+    let finalBody = text + `\n\n*ALTRE SEZIONI:*\n🛠️ .${_p}menustrumenti\n⭐ .${_p}menupremium\n👨‍💻 .${_p}menucreatore`;
 
-    await conn.relayMessage(m.chat, msg, { messageId: m.key.id });
+    await conn.sendMessage(m.chat, {
+      image: { url: MENU_IMAGE_URL },
+      caption: finalBody.trim(),
+      footer: '𝖇𝖑𝖔𝖔𝖉𝖇𝖔𝖙',
+      templateButtons: templateButtons,
+      viewOnce: true
+    }, { quoted: m });
+
     await m.react('💠');
 
   } catch (e) {
