@@ -19,26 +19,28 @@ let handler = async (m, { conn, usedPrefix: _p, command, args, isOwner, isAdmin 
     }
   }
 
+  // --- LISTA COMPLETA REINTEGRATA DAGLI SCREENSHOT ---
   const securityFeatures = [
     { key: 'antigore', name: '🚫 Antigore' },
     { key: 'modoadmin', name: '🛡️ Soloadmin' },
     { key: 'antivoip', name: '📞 Antivoip' },
-    { key: 'antiLink', name: '🔗 Antilink' },
-    { key: 'antiLink2', name: '🌐 Antilink Social' },
+    { key: 'antilink', name: '🔗 Antilink' },
+    { key: 'antilinksocial', name: '🌐 Antilinksocial' },
     { key: 'antitrava', name: '🛡️ Antitrava' },
     { key: 'antinuke', name: '☢️ Antinuke' },
-    { key: 'antioneview', name: '👁️ Antiviewonce' },
+    { key: 'antiviewonce', name: '👁️ Antiviewonce' },
     { key: 'antispam', name: '🛑 Antispam' }
   ]
 
   const automationFeatures = [
-    { key: 'ai', name: '🧠 IA (Intelligenza)' },
-    { key: 'vocali', name: '🎤 Siri (Audio Auto)' },
+    { key: 'ai', name: '🧠 IA' },
+    { key: 'vocali', name: '🎤 Siri' },
     { key: 'reaction', name: '😎 Reazioni' },
     { key: 'autolevelup', name: '⬆️ Autolivello' },
     { key: 'welcome', name: '👋 Welcome' }
   ]
 
+  // SE NON CI SONO ARGOMENTI: MOSTRA IL MENU
   if (!args.length) {
     let text = `
 ┎━━━━━━━━━━━━━━━━━━━┑
@@ -50,9 +52,9 @@ let handler = async (m, { conn, usedPrefix: _p, command, args, isOwner, isAdmin 
 └───────────────────┘
 
 *〘 ɪɴstruᴢɪᴏɴɪ ᴏᴘᴇʀᴀᴛɪᴠᴇ 〙*
-> Attiva/Disattiva i moduli digitando:
-*│ ➤* ${_p}*attiva* <nome>
-*│ ➤* ${_p}*disattiva* <nome>
+> Usa i seguenti comandi per configurare il sistema:
+*│ ➤* ${_p}*attiva* <funzione>
+*│ ➤* ${_p}*disattiva* <funzione>
 
 *┍━━━〔 🛡️ sɪᴄᴜʀᴇᴢᴢᴀ 〕━━━┑*
 ${securityFeatures.map(f => `┇ ${f.name}  *➤* ${f.key}`).join('\n')}
@@ -62,27 +64,50 @@ ${securityFeatures.map(f => `┇ ${f.name}  *➤* ${f.key}`).join('\n')}
 ${automationFeatures.map(f => `┇ ${f.name}  *➤* ${f.key}`).join('\n')}
 *┕━━━━━──ׄ──ׅ──ׄ──━━━━━┙*
 `
+    if (isOwner) {
+      text += `\n*┍━━━〔 👑 ᴏᴡɴᴇʀ ᴄᴏɴᴛʀᴏʟ 〕━━━┑*\n┇ ⭐ Antichiamate ➤ anticall\n┇ ⭐ Antiprivato ➤ antiPrivate\n┇ ⭐ Solo Creatore ➤ soloCreatore\n*┕━━━━━──ׄ──ׅ──ׄ──━━━━━┙*`
+    }
+
+    text += `\n\n_ʙʟᴅ-ʙᴏᴛ sᴇᴄᴜʀɪᴛʏ ɪɴᴛᴇʀꜰᴀᴄᴇ_`
+
     await conn.sendMessage(m.chat, { text: text.trim(), contextInfo: dynamicContextInfo }, { quoted: m })
     return
   }
 
+  // LOGICA DI ATTIVAZIONE (SPOSTAMENTO SUL DATABASE)
   let isEnable = !/disattiva|off|0/i.test(command)
   let type = args[0].toLowerCase()
-  
-  // Mappatura corretta per il database
+  let status = isEnable ? 'ATTIVATO ✅' : 'DISATTIVATO ❌'
+
+  // Mappatura nomi input -> variabili database reali
   let dbKey = type
   if (type === 'antilink') dbKey = 'antiLink'
   if (type === 'antilinksocial') dbKey = 'antiLink2'
   if (type === 'antiviewonce') dbKey = 'antioneview'
+  if (type === 'antiprivato') dbKey = 'antiPrivate'
 
-  if (chat[dbKey] === undefined && !isOwner) return m.reply('❓ Funzione non riconosciuta dal sistema.')
+  // Verifica permessi
+  const isSecurity = securityFeatures.some(f => f.key.toLowerCase() === type)
+  const isAuto = automationFeatures.some(f => f.key.toLowerCase() === type)
+  const isOwnerKey = ['anticall', 'antiprivate', 'solocreatore'].includes(type)
 
-  if (m.isGroup && !isAdmin && !isOwner) return m.reply('🛡️ Solo per Admin')
+  if (isSecurity || isAuto) {
+    if (!m.isGroup && !isOwner) return m.reply('❌ Solo nei gruppi')
+    if (m.isGroup && !isAdmin && !isOwner) return m.reply('🛡️ Solo per Admin')
+    chat[dbKey] = isEnable
+  } else if (isOwnerKey) {
+    if (!isOwner) return m.reply('👑 Solo Owner')
+    bot[dbKey] = isEnable
+  } else {
+    return m.reply('❓ Funzione non trovata. Controlla la lista.')
+  }
 
-  chat[dbKey] = isEnable
   await m.react(isEnable ? '✅' : '❌')
-  m.reply(`『 🛡️ 』 *SISTEMA AGGIORNATO*\n\nModulo: *${type.toUpperCase()}*\nStato: *${isEnable ? 'ATTIVATO ✅' : 'DISATTIVATO ❌'}*`)
+  m.reply(`『 🛡️ 』 *SISTEMA AGGIORNATO*\n\nModulo: *${type.toUpperCase()}*\nStato: *${status}*`)
 }
 
-handler.command = ['attiva', 'disattiva', 'on', 'off']
+handler.help = ['attiva', 'disattiva']
+handler.tags = ['sicurezza']
+handler.command = ['attiva', 'disattiva', 'on', 'off', 'enable', 'disable']
+
 export default handler
