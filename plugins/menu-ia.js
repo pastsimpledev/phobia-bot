@@ -11,35 +11,37 @@ const emojicategoria = {
 }
 
 let tags = {
-  'iatesto': '╭ *`𝐈𝐀 𝐓𝐄𝐒𝐓𝐎`* ╯',
-  'iaaudio': '╭ *`𝐈𝐀 𝐀𝐔𝐃𝐈𝐎`* ╯',
-  'iaimmagini': '╭ *`𝐈𝐀 𝐈𝐌𝐌𝐀𝐆𝐈𝐍𝐈`* ╯'
+  'iatesto': '𝐈𝐀 𝐓𝐄𝐒𝐓𝐎',
+  'iaaudio': '𝐈𝐀 𝐀𝐔𝐃𝐈𝐎',
+  'iaimmagini': '𝐈𝐀 𝐈𝐌𝐌𝐀𝐆𝐈𝐍𝐈'
 }
 
 const defaultMenu = {
-  before: `╭⭒─ׄ─⊱ *𝐌𝐄𝐍𝐔 - IA* ⊰
-✦ 👤 *User:* %name
-✧ 🪐 *Tempo Attivo:* %uptime
-✦ 💫 *Utenti:* %totalreg 
-╰⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒\n
+  before: `
+┎━━━━━━━━━━━━━━━━━━━┑
+┃   ✧  𝐁𝐋𝐃 - 𝐈𝐍𝐓𝐄𝐋𝐋𝐈𝐆𝐄𝐍𝐂𝐄  ✧   ┃
+┖━━━━━━━━━━━━━━━━━━━┙
+┌───────────────────┐
+  👤 𝚄𝚜𝚎𝚛: %name
+  🏆 𝙻𝚟𝚕: %level
+  🪐 𝚄𝚙𝚝𝚒𝚖𝚎: %uptime
+  👥 𝚄𝚜𝚎𝚛𝚜: %totalreg
+└───────────────────┘
+
+*〘 ᴀᴄᴄᴇssɪɴɢ ɴᴇᴜʀᴀʟ ɴᴇᴛᴡᴏʀᴋ... 〙*
 `.trimStart(),
-  header: '      ⋆｡˚『 %category 』˚｡⋆\n╭',
-  body: '*│ ➤* 『%emoji』 %cmd',
-  footer: '*╰⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*\n',
-  after: `> ⋆｡°✩ BLD-BLOOD✩°｡⋆`,
+  header: '┍━━━〔 %category 〕━━━┑',
+  body: '┇ %emoji  *%cmd*',
+  footer: '┕━━━━━──ׄ──ׅ──ׄ──━━━━━┙\n',
+  after: `_ꜱʏꜱᴛᴇᴍ ɪᴀ ᴏᴘᴇʀᴀᴛɪᴏɴᴀʟ_`
 }
 
 let handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
   try {
     await conn.sendPresenceUpdate('composing', m.chat)
     
-    let { level, exp, role } = global.db.data.users[m.sender] || {}
+    let { level = 0, role = 'User' } = global.db.data.users[m.sender] || {}
     let name = await conn.getName(m.sender) || 'Utente'
-    let d = new Date()
-    let locale = 'it'
-    let week = d.toLocaleDateString(locale, { weekday: 'long' })
-    let date = d.toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' })
-    let time = d.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit', second: '2-digit' })
     let uptime = clockString(process.uptime() * 1000)
     let totalreg = Object.keys(global.db.data.users).length
 
@@ -53,56 +55,50 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
       }))
 
     let menuTags = Object.keys(tags)
-    let text = [
+    let _text = [
       defaultMenu.before,
       ...menuTags.map(tag => {
-        let header = defaultMenu.header.replace(/%category/g, tags[tag])
-        let cmds = help
-          .filter(menu => menu.tags.includes(tag) && menu.help)
-          .map(menu =>
-            menu.help.map(cmd =>
-              defaultMenu.body
+        return defaultMenu.header.replace(/%category/g, tags[tag]) + '\n' + [
+          ...help.filter(menu => menu.tags.includes(tag) && menu.help).map(menu => {
+            return menu.help.map(cmd => {
+              return defaultMenu.body
                 .replace(/%cmd/g, menu.prefix ? cmd : _p + cmd)
-                .replace(/%emoji/g, emojicategoria[tag] || '❔')
+                .replace(/%emoji/g, emojicategoria[tag] || '🧠')
                 .trim()
-            ).join('\n')
-          ).join('\n')
-        return `${header}\n${cmds}\n${defaultMenu.footer}`
+            }).join('\n')
+          }),
+          defaultMenu.footer
+        ].join('\n')
       }),
       defaultMenu.after
     ].join('\n')
 
-    text = text.replace(/%name/g, name)
-      .replace(/%level/g, level || 0)
-      .replace(/%exp/g, exp || 0)
-      .replace(/%role/g, role || 'N/A')
-      .replace(/%week/g, week)
-      .replace(/%date/g, date)
-      .replace(/%time/g, time)
-      .replace(/%uptime/g, uptime)
-      .replace(/%totalreg/g, totalreg)
+    let replace = {
+      '%': '%',
+      p: _p,
+      name, level, uptime, totalreg
+    }
 
-    // --- INVIO COME IMMAGINE (SOSTITUITO VIDEO) ---
+    let text = _text.replace(new RegExp(`%(${Object.keys(replace).sort((a, b) => b.length - a.length).join('|')})`, 'g'), (_, name) => '' + replace[name])
+
+    await m.react('🧠')
+
+    // --- INVIO CON IMMAGINE E CONTEXT GRUPPO ---
     await conn.sendMessage(m.chat, {
       image: { url: localImg },
       caption: text.trim(),
       contextInfo: {
         mentionedJid: [m.sender],
-        isForwarded: true,
         forwardedNewsletterMessageInfo: {
           newsletterJid: '120363232743845068@newsletter',
-          newsletterName: "⋆｡°✩ BLD-BOT AI System ✩°｡⋆",
-          serverMessageId: -1
-        },
-        forwardingScore: 999
+          newsletterName: "✧ 𝙱𝙻𝙳-𝙱𝙾𝚃 𝙸𝙽𝚃𝙴𝙻𝙻𝙸𝙶𝙴𝙽𝙲𝙴 ✧"
+        }
       }
     }, { quoted: m })
 
-    await m.react('🧠')
-
   } catch (e) {
     console.error(e)
-    conn.reply(m.chat, '❌ Errore nel caricamento del menu IA. Verifica il file menu-ia.jpeg.', m)
+    conn.reply(m.chat, '❌ Errore nel caricamento del modulo IA.', m)
   }
 }
 
@@ -113,9 +109,8 @@ handler.command = ['menuia', 'menuai']
 export default handler
 
 function clockString(ms) {
-  if (isNaN(ms)) return '--:--:--'
-  let h = Math.floor(ms / 3600000)
-  let m = Math.floor(ms / 60000) % 60
-  let s = Math.floor(ms / 1000) % 60
-  return [h, m, s].map(v => v.toString().padStart(2, '0')).join(':')
+  let h = isNaN(ms) ? '00' : Math.floor(ms / 3600000).toString().padStart(2, '0')
+  let m = isNaN(ms) ? '00' : (Math.floor(ms / 60000) % 60).toString().padStart(2, '0')
+  let s = isNaN(ms) ? '00' : (Math.floor(ms / 1000) % 60).toString().padStart(2, '0')
+  return `${h}:${m}:${s}`
 }
