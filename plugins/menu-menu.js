@@ -33,9 +33,10 @@ const defaultMenu = {
   after: `_Powered by BLD-BOT Interface_`,
 }
 
-const swag = 'https://i.ibb.co/hJW7WwxV/varebot.jpg';
+// --- MODIFICA PERCORSO IMMAGINE LOCALE ---
+// Usiamo join per puntare alla cartella 'media' nella root del progetto
+const localImg = join(process.cwd(), 'media', 'menu-principale.jpeg');
 
-// --- LISTA COMPLETA 8 TASTI (OWNER SOSTITUITO CON EURO) ---
 const bldButtons = [
   { title: "🛡️ SICUREZZA", command: "attiva" },
   { title: "🎮 GIOCHI", command: "menugiochi" },
@@ -85,16 +86,15 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
     let replace = { '%': '%', p: _p, uptime, name, totalreg };
     let text = _text.replace(new RegExp(`%(${Object.keys(replace).sort((a, b) => b.length - a.length).join('|')})`, 'g'), (_, name) => '' + replace[name]);
 
-    // --- CONFIGURAZIONE UNIVERSALE TASTI RAPIDI ---
     const buttons = bldButtons.map(menu => ({
       buttonId: _p + menu.command,
       buttonText: { displayText: menu.title },
       type: 1
     }));
 
-    // Invio unico per tutti i dispositivi
+    // --- INVIO CON IMMAGINE LOCALE ---
     await conn.sendMessage(m.chat, {
-      image: { url: swag },
+      image: { url: localImg }, // Ora legge il file locale
       caption: text.trim(),
       footer: "B L D - B O T  S Y S T E M",
       buttons: buttons,
