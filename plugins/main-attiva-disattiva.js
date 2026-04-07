@@ -1,4 +1,6 @@
 import fetch from 'node-fetch';
+import fs from 'fs';
+import path from 'path';
 
 const PERM = {
   ADMIN: 'admin',
@@ -82,12 +84,12 @@ let handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, isS
   📡 𝚂𝚝𝚊𝚝𝚞𝚜: 𝙾𝚗𝚕𝚒𝚗𝚎
 └────────────────────┘
 
-*〘 ɪɴsᴛʀᴜᴢɪᴏɴɪ ᴏᴘᴇʀᴀᴛɪᴠᴇ 〙*
+*〘 ɪɴsᴛʀᴜᴢɪᴏɴɪ ᴏᴘᴇʀᴀᴛɪ𝐯ᴇ 〙*
 > Attiva o disattiva i moduli:
 *│ ➤* .attiva <nome>
 *│ ➤* .disattiva <nome>
 
-*┍━━━━━〔 🛡️ sɪᴄᴜʀᴇᴢᴢᴀ 〕━━━━━┑*\n`;
+*┍━━━━━〔 🛡️ sɪᴄᴜʀᴇᴢﾞᴀ 〕━━━━━┑*\n`;
 
   const sicurezzaKeys = ['antigore', 'modoadmin', 'antivoip', 'antiLink', 'antiLinkUni', 'antiLink2', 'antitrava', 'antinuke', 'antioneview', 'antispam', 'antisondaggi', 'antiparolacce', 'antiBot', 'antiBot2', 'antimedia', 'antitagall', 'antiporno'];
   featureRegistry.filter(f => sicurezzaKeys.includes(f.key)).forEach(f => {
@@ -96,14 +98,14 @@ let handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, isS
 
   menu += `*┕━━━━━━━──ׄ──ׅ──ׄ──━━━━━━━┙*
 
-*┍━━━━━〔 🤖 ᴀᴜᴛᴏᴍᴀᴢɪᴏɴᴇ 〕━━━━━┑*\n`;
+*┍━━━━━〔 🤖 ᴀᴜᴛᴏᴍᴀﾞɪᴏɴᴇ 〕━━━━━┑*\n`;
 
   const automazioneKeys = ['ai', 'vocali', 'reaction', 'autolevelup', 'welcome', 'goodbye', 'autotrascrizione', 'autotraduzione', 'rileva'];
   featureRegistry.filter(f => automazioneKeys.includes(f.key)).forEach(f => {
     menu += `┇ ${getStatus(f)} ${f.name}\n┇ _${f.desc}_\n┇ ➤ *${f.key}*\n┇\n`;
   });
 
-  menu += `*┕━━━━━━━──ׄ──ׅ──ׄ──━━━━━━━┙*
+  menu += `*┕━━━━━━━──ׅ──ׄ──ׅ──━━━━━━━┙*
 
 *┍━━━━━〔 ⚙️ sɪsᴛᴇᴍᴀ ʙᴏᴛ 〕━━━━━┑*\n`;
 
@@ -114,22 +116,25 @@ let handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, isS
 
   menu += `*┕━━━━━━━──ׄ──ׅ──ׄ──━━━━━━━┙*\n\n_ʙʟᴅ-ʙᴏᴛ sᴇᴄᴜʀɪᴛʏ ɪɴᴛᴇʀꜰᴀᴄᴇ_`;
 
-  // Immagine specifica richiesta: menu-sicurezza.jpeg
-  // Nota: Assicurati che il bot possa risolvere questo nome file o usa un URL diretto se necessario.
-  let menuImage = 'https://qu.ax/TfUj.jpg'; // Default se fallisce
-  try {
-     // Qui puoi mettere l'URL diretto della tua immagine "menu-sicurezza.jpeg"
-     menuImage = 'https://i.ibb.co/kVdFLyGL/sam.jpg'; 
-  } catch {}
+  // --- CARICAMENTO FILE LOCALE menu-sicurezza.jpeg ---
+  let thumb;
+  const imagePath = path.join(process.cwd(), 'menu-sicurezza.jpeg');
+  
+  if (fs.existsSync(imagePath)) {
+    thumb = fs.readFileSync(imagePath); // Legge il file locale
+  } else {
+    thumb = Buffer.alloc(0); // Buffer vuoto se il file non esiste (evita crash)
+  }
 
   await conn.sendMessage(m.chat, {
     text: menu,
     contextInfo: {
       externalAdReply: {
         title: "𝐁𝐋𝐃 - 𝐌𝐀𝐒𝐓𝐄𝐑 𝐂𝐎𝐍𝐓𝐑𝐎𝐋",
-        body: "Security Interface Terminal",
+        body: "Terminal Console v3.1",
         mediaType: 1,
-        thumbnailUrl: menuImage, // Usa l'immagine specifica
+        renderLargerThumbnail: true,
+        thumbnail: thumb, // Invia l'immagine caricata dal file
         sourceUrl: 'https://github.com'
       }
     }
