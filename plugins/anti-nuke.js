@@ -88,7 +88,7 @@ handler.before = async function (m, { conn, participants, isBotAdmin }) {
         title: 'SISTEMA DI PROTEZIONE LOCALE',
         body: 'Sicurezza gruppo attiva',
         thumbnailUrl: 'https://qu.ax/TfUj.jpg',
-        sourceUrl: 'vare ✧ bot',
+        sourceUrl: 'BLOODANTINUKE',
         mediaType: 1,
         renderLargerThumbnail: true
       }
