@@ -32,27 +32,15 @@ const featureRegistry = [
   { key: 'antiLink2', store: 'chat', perm: PERM.ADMIN, aliases: ['antilink2', 'antilinkhard', 'antilinksocial'], name: '🌐❌ Antilinksocial', desc: 'Blocca tutti i link di social. Per singoli: .attiva antiig/antitiktok/antiyt..' },
   { key: 'reaction', store: 'chat', perm: PERM.ADMIN, aliases: ['reazioni'], groupOnly: true, name: '😎 Reazioni', desc: 'Reazioni automatiche' },
   { key: 'autolevelup', store: 'chat', perm: PERM.ADMIN, aliases: ['autolivello', 'autolvl'], name: '⬆️ Autolivello', desc: 'Messaggio di livello automatico' },
-  { key: 'antiLink2_tiktok', store: 'chat', perm: PERM.ADMIN, aliases: ['antitiktok', 'antitk'], name: '🎵🚫 Anti-TikTok', desc: 'Blocca link TikTok' },
-  { key: 'antiLink2_youtube', store: 'chat', perm: PERM.ADMIN, aliases: ['antiyoutube', 'antiyt'], name: '▶️🚫 Anti-YouTube', desc: 'Blocca link YouTube' },
-  { key: 'antiLink2_instagram', store: 'chat', perm: PERM.ADMIN, aliases: ['antiinstagram', 'antiig'], name: '📸🚫 Anti-Instagram', desc: 'Blocca link Instagram' },
-  { key: 'antiLink2_facebook', store: 'chat', perm: PERM.ADMIN, aliases: ['antifacebook', 'antifb'], name: '👤🚫 Anti-Facebook', desc: 'Blocca link Facebook' },
-  { key: 'antiLink2_twitter', store: 'chat', perm: PERM.ADMIN, aliases: ['antitwitter', 'antix'], name: '🐦🚫 Anti-Twitter/X', desc: 'Blocca link Twitter/X' },
-  { key: 'antiLink2_telegram', store: 'chat', perm: PERM.ADMIN, aliases: ['antitelegram', 'antitg'], name: '✈️🚫 Anti-Telegram', desc: 'Blocca link Telegram' },
-  { key: 'antiLink2_discord', store: 'chat', perm: PERM.ADMIN, aliases: ['antidiscord', 'antidc'], name: '🎮🚫 Anti-Discord', desc: 'Blocca link Discord' },
-  { key: 'antiLink2_snapchat', store: 'chat', perm: PERM.ADMIN, aliases: ['antisnapchat', 'antisnap'], name: '👻🚫 Anti-Snapchat', desc: 'Blocca link Snapchat' },
-  { key: 'antiLink2_twitch', store: 'chat', perm: PERM.ADMIN, aliases: ['antitwitch'], name: '🟣🚫 Anti-Twitch', desc: 'Blocca link Twitch' },
-  { key: 'antiLink2_reddit', store: 'chat', perm: PERM.ADMIN, aliases: ['antireddit'], name: '🔴🚫 Anti-Reddit', desc: 'Blocca link Reddit' },
-  { key: 'antiLink2_onlyfans', store: 'chat', perm: PERM.ADMIN, aliases: ['antionlyfans', 'antiof'], name: '🔞🚫 Anti-OnlyFans', desc: 'Blocca link OnlyFans' },
-  { key: 'antiLink2_linkedin', store: 'chat', perm: PERM.ADMIN, aliases: ['antilinkedin'], name: '💼🚫 Anti-LinkedIn', desc: 'Blocca link LinkedIn' },
-  { key: 'antiLink2_github', store: 'chat', perm: PERM.ADMIN, aliases: ['antigithub'], name: '🐙🚫 Anti-GitHub', desc: 'Blocca link GitHub' },
+  { key: 'antinuke', store: 'chat', perm: PERM.OWNER, aliases: ['antidistruzione'], groupOnly: true, name: '🛡️ Antinuke', desc: 'Protezione totale contro raid' },
   { key: 'antiprivato', store: 'bot', perm: PERM.OWNER, aliases: ['antipriv'], name: '🔒 Blocco privato', desc: 'Blocca chi scrive in privato al bot' },
-  { key: 'soloe', store: 'bot', perm: PERM.sam, aliases: ['solocreatore', 'solowner', 'soloowner'], name: '👑 Solocreatore', desc: 'Solo il creatore puo usare i comandi' },
+  { key: 'soloe', store: 'bot', perm: PERM.sam, aliases: ['solocreatore', 'solowner', 'soloowner'], name: '👑 Solocreatore', desc: 'Solo Blood può usare i comandi' },
   { key: 'multiprefix', store: 'bot', perm: PERM.OWNER, aliases: ['multiprefisso', 'multipref'], onToggle: 'multiprefix', name: '🔣 Multiprefix', desc: 'Permette più prefissi (es: .!/)' },
   { key: 'jadibotmd', store: 'bot', perm: PERM.OWNER, aliases: ['subbots', 'jadibotmd'], name: '🧬 Subbots', desc: 'Bot multi-sessione' },
-  { key: 'antispambot', store: 'bot', perm: PERM.OWNER, aliases: [], name: '🤖🛑 Anti-spam comandi', desc: 'Limita lo spam di comandi (globale in tutti i gruppi)' },
-  { key: 'autoread', store: 'bot', perm: PERM.OWNER, aliases: ['read', 'lettura'], name: '👀 Lettura', desc: 'Il bot legge automaticamente i messaggi (poco + lag - ban)' },
-  { key: 'anticall', store: 'bot', perm: PERM.sam, aliases: [], name: '❌📞 Antichiamate', desc: 'Rifiuta automaticamente le chiamate al bot' },
-  { key: 'registrazioni', store: 'bot', perm: PERM.OWNER, aliases: ['registrazione', 'reg'], name: '📛 Obbligo registrazione', desc: 'Richiede registrazione per usare alcuni comandi' },
+  { key: 'antispambot', store: 'bot', perm: PERM.OWNER, aliases: [], name: '🤖🛑 Anti-spam comandi', desc: 'Limita lo spam di comandi (globale)' },
+  { key: 'autoread', store: 'bot', perm: PERM.OWNER, aliases: ['read', 'lettura'], name: '👀 Lettura', desc: 'Il bot legge automaticamente i messaggi' },
+  { key: 'anticall', store: 'bot', perm: PERM.sam, aliases: [], name: '❌📞 Antichiamate', desc: 'Rifiuta automaticamente le chiamate' },
+  { key: 'registrazioni', store: 'bot', perm: PERM.OWNER, aliases: ['registrazione', 'reg'], name: '📛 Obbligo registrazione', desc: 'Richiede registrazione per usare il bot' },
 ];
 
 const aliasMap = new Map();
@@ -71,7 +59,7 @@ const adminkeyz = new Set([
   'antiLink2', 'reaction', 'autolevelup'
 ]);
 const ownerkeyz = new Set([
-  'antiprivato', 'soloCreatore', 'multiprefix', 'jadibotmd',
+  'antinuke', 'antiprivato', 'soloe', 'multiprefix', 'jadibotmd',
   'antispambot', 'autoread', 'anticall', 'registrazioni'
 ]);
 
@@ -84,12 +72,10 @@ function checkPermission(feat, { m, isAdmin, isOwner, isSam }) {
   }
   switch (feat.perm) {
     case PERM.sam:
-      if (!isSam) return '『 ❌ 』 Richiede privilegi di proprietario';
+      if (!isSam) return '『 ❌ 』 Accesso negato: Solo Blood può gestire questa funzione';
       break;
     case PERM.OWNER:
-      if (feat.store === 'bot' && !isOwner && !isSam) return '『 ❌ 』 Richiede privilegi di proprietario';
-      if (feat.store === 'chat' && m.isGroup && !(isAdmin || isOwner || isSam))
-        return '\n- 〘 🛠️ 〙 *`ꪶ͢Solo gli admin del gruppo possono usare questo comandoꫂ`*';
+      if (!isOwner && !isSam) return '『 ❌ 』 Accesso negato: Solo Blood può gestire questa funzione';
       break;
     case PERM.ADMIN:
       if (m.isGroup && !(isAdmin || isOwner || isSam))
@@ -114,7 +100,7 @@ function handleMultiprefixToggle(bot) {
 }
 
 let handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, isSam }) => {
-  const userName = m.pushName || 'Utente';
+  const userName = m.pushName || 'User';
 
   let groupProfilePicBuffer;
   try {
@@ -136,8 +122,8 @@ let handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, isS
   } else {
     dynamicContextInfo = {
       externalAdReply: {
-        title: "varebot",
-        body: "Sistema di gestione funzioni",
+        title: "BLD-BLOOD",
+        body: "Terminal Control Center",
         mediaType: 1,
         jpegThumbnail: groupProfilePicBuffer
       }
@@ -155,9 +141,7 @@ let handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, isS
   const botJid = conn.decodeJid(conn.user.jid);
   global.db.data.settings[botJid] = global.db.data.settings[botJid] || {};
   let chat = global.db.data.chats[m.chat];
-  let user = global.db.data.users[m.sender];
   let bot = global.db.data.settings[botJid];
-  let settings = global.db.data.settings;
 
   const getStatus = (key) => {
     const feat = aliasMap.get(key.toLowerCase());
@@ -170,46 +154,46 @@ let handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, isS
     const active = features.filter(f => getStatus(f.key));
     const inactive = features.filter(f => !getStatus(f.key));
     return [
-      { title: 'Disattivati 『 ❌ 』', rows: inactive.map(f => ({ title: f.name, description: f.desc, id: `${usedPrefix}attiva ${f.key}` })) },
-      { title: 'Attivati 『 ✅ 』', rows: active.map(f => ({ title: f.name, description: f.desc, id: `${usedPrefix}disattiva ${f.key}` })) }
+      { title: '🔴 DISATTIVATI', rows: inactive.map(f => ({ title: f.name, description: f.desc, id: `${usedPrefix}attiva ${f.key}` })) },
+      { title: '🟢 ATTIVATI', rows: active.map(f => ({ title: f.name, description: f.desc, id: `${usedPrefix}disattiva ${f.key}` })) }
     ];
   };
 
-  const buildVcard = () => `BEGIN:VCARD\nVERSION:3.0\nN:;${userName};;;\nFN:${userName}\nitem1.X-ABLabel:📱 Cellulare\nitem1.TEL;waid=${m.sender.split('@')[0]}:+${m.sender.split('@')[0]}\nitem2.EMAIL;type=INTERNET:bot@whatsapp.com\nitem2.X-ABLabel:💌 Email\nEND:VCARD`;
+  const buildVcard = () => `BEGIN:VCARD\nVERSION:3.0\nN:;${userName};;;\nFN:${userName}\nitem1.X-ABLabel:📱 Cellulare\nitem1.TEL;waid=${m.sender.split('@')[0]}:+${m.sender.split('@')[0]}\nEND:VCARD`;
 
   if (!args.length) {
     const adminSections = createSections(adminz);
     const ownerSections = createSections(ownerz);
-    const varebot = 'media/menu/varebot.jpeg';
+    const bldLogo = 'https://i.ibb.co/kVdFLyGL/sam.jpg'; // O il tuo link locale
 
     const adminCard = {
-      image: { url: varebot },
-      title: '『 👥 』 \`Opzioni Admin\`',
-      body: '- 〘 🛠️ 〙 *Gestisci le funzioni del gruppo selezionando attiva o disattiva.*',
-      footer: '˗ˏˋ ☾ 𝚟𝚊𝚛𝚎𝚋𝚘𝚝 ☽ ˎˊ˗',
-      buttons: [{ name: 'single_select', buttonParamsJson: JSON.stringify({ title: 'Impostazioni gruppo', sections: adminSections }) }]
+      image: { url: bldLogo },
+      title: '『 👥 』 \`PANEL ADMIN\`',
+      body: '🛡️ Gestione sicurezza e utility del gruppo.',
+      footer: '⚙️ BLD-BLOOD CORE',
+      buttons: [{ name: 'single_select', buttonParamsJson: JSON.stringify({ title: 'Configura Gruppo', sections: adminSections }) }]
     };
 
     let cards = [adminCard];
     if (isOwner || isSam) {
       cards.push({
         image: { url: 'https://i.ibb.co/kVdFLyGL/sam.jpg' },
-        title: '『 👑 』 \`Opzioni Owner\`',
-        body: '- 〘 🛠️ 〙Gestisci le funzioni proprietario selezionando attiva o disattiva.',
-        footer: '˗ˏˋ ☾ 𝚟𝚊𝚛𝚎𝚋𝚘𝚝 ☽ ˎˊ˗',
-        buttons: [{ name: 'single_select', buttonParamsJson: JSON.stringify({ title: 'Seleziona azione', sections: ownerSections }) }]
+        title: '『 👑 』 \`PANEL BLOOD\`',
+        body: '⚠️ Accesso riservato al creatore Blood.',
+        footer: '⚙️ BLD-BLOOD CORE',
+        buttons: [{ name: 'single_select', buttonParamsJson: JSON.stringify({ title: 'Configura Sistema', sections: ownerSections }) }]
       });
     }
 
     const fkontak_menu = {
-      key: { participant: m.sender, remoteJid: '0@s.whatsapp.net', fromMe: false, id: 'BotAssistant' },
+      key: { participant: m.sender, remoteJid: '0@s.whatsapp.net', fromMe: false, id: 'BLD-BLOOD' },
       message: { contactMessage: { displayName: userName, vcard: buildVcard(), jpegThumbnail: groupProfilePicBuffer } },
       participant: m.sender
     };
 
     return conn.sendMessage(m.chat, {
-      text: '*Sistema di gestione funzioni*',
-      footer: '*─ׄ✦☾⋆⁺₊✧ 𝓿𝓪𝓻𝓮𝓫𝓸𝓽 ✧₊⁺⋆☽✦─ׅ⭒*',
+      text: '*SYSTEM CONTROL CENTER*',
+      footer: '*─ׄ✦☾⋆⁺₊✧ BLD-BLOOD ✧₊⁺⋆☽✦─ׅ⭒*',
       cards,
       contextInfo: dynamicContextInfo
     }, { quoted: fkontak_menu });
@@ -221,7 +205,7 @@ let handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, isS
 
     const feat = aliasMap.get(type);
     if (!feat) {
-      result.status = '『 ❌ 』 Comando non riconosciuto';
+      result.status = '『 ❌ 』 Comando ignoto';
       results.push(result);
       continue;
     }
@@ -235,29 +219,27 @@ let handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, isS
 
     const target = feat.store === 'bot' ? bot : chat;
     if (target[feat.key] === isEnable) {
-      result.status = `『 ⚠️ 』 Già ${isEnable ? 'attivo' : 'disattivato'}`;
+      result.status = `『 ⚠️ 』 Stato già ${isEnable ? 'attivo' : 'disattivato'}`;
       results.push(result);
       continue;
     }
 
     target[feat.key] = isEnable;
-
     if (feat.onToggle === 'multiprefix') handleMultiprefixToggle(bot);
 
-    result.status = `『 ✅ 』 ${isEnable ? 'Attivato' : 'Disattivato'}`;
+    result.status = `『 ✅ 』 Operazione completata`;
     result.success = true;
     results.push(result);
   }
 
-  let summaryMessage = `『 🉐 』 \`Riepilogo modifiche:\`\n\n`;
+  let summaryMessage = `『 🉐 』 \`LOG MODIFICHE BLD-BLOOD\`\n\n`;
   for (const result of results) {
-    const cleanType = String(result.type || '').trim();
-    const cleanStatus = String(result.status || '').replace(/^\s*\n+/, ' ').replace(/^\s*-\s*/, ' ').trimEnd();
-    summaryMessage += `- \`${cleanType}\` ${cleanStatus ? ' ' + cleanStatus : ''}\n`;
+    const cleanType = String(result.type || '').toUpperCase();
+    summaryMessage += `- *[${cleanType}]*: ${result.status}\n`;
   }
 
   const fkontak_confirm = {
-    key: { participant: m.sender, remoteJid: '0@s.whatsapp.net', fromMe: false, id: 'BotFunction' },
+    key: { participant: m.sender, remoteJid: '0@s.whatsapp.net', fromMe: false, id: 'BLOOD-SYS' },
     message: { contactMessage: { displayName: userName, vcard: buildVcard(), jpegThumbnail: groupProfilePicBuffer } },
     participant: m.sender
   };
