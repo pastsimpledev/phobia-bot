@@ -69,6 +69,7 @@ const applicaEffetto = async (m, conn, tipoEffetto, usedPrefix, command) => {
         if (!bufferImmagine) throw new Error('Errore nel recupero dell\'immagine.')
 
         let nomeUtente = await conn.getName(who)
+        // Passiamo tipoEffetto per decidere quale rendering usare
         let bufferFinale = await applicaEffettiCanvas(bufferImmagine, tipoEffetto)
         
         const messaggi = { 
@@ -94,16 +95,20 @@ async function applicaEffettiCanvas(buffer, tipo) {
     ctx.drawImage(img, 0, 0)
 
     if (tipo === 'sborra') {
-        // Logica specifica per schizzi densi e bianchi
-        let num = 15 + Math.floor(Math.random() * 10)
-        for (let i = 0; i < num; i++) {
-            let x = Math.random() * img.width
-            let y = Math.random() * img.height
-            let size = (img.width * 0.05) + Math.random() * 30
-            disegnaSchizzo(ctx, x, y, size)
+        // --- NUOVO EFFETTO MIGLIORATO ---
+        // Numero di schizzi principali basato sulla dimensione dell'immagine
+        let numMainSplats = 10 + Math.floor(Math.random() * 8);
+        
+        for (let i = 0; i < numMainSplats; i++) {
+            let x = Math.random() * img.width;
+            let y = Math.random() * img.height;
+            // Dimensione base dinamica
+            let baseSize = (img.width * 0.04) + Math.random() * (img.width * 0.03);
+            
+            disegnaSborraRealistica(ctx, x, y, baseSize);
         }
     } else {
-        // Effetti Pride (Overlay colorato)
+        // Effetti Pride (Overlay colorato - invariato)
         const pride = {
             gay: ['#E40303', '#FF8C00', '#FFED00', '#008563', '#409CFF', '#955ABE'],
             trans: ['#5BCEFA', '#F5A9B8', '#FFFFFF', '#F5A9B8', '#5BCEFA']
@@ -118,38 +123,91 @@ async function applicaEffettiCanvas(buffer, tipo) {
     return canvas.toBuffer('image/jpeg')
 }
 
-// Funzione specifica per l'effetto richiesto (Sborra)
-function disegnaSchizzo(ctx, x, y, size) {
-    ctx.save()
-    ctx.translate(x, y)
-    ctx.fillStyle = '#FFFFFF'
-    ctx.shadowColor = 'rgba(0,0,0,0.1)'
-    ctx.shadowBlur = 5
+// --- FUNZIONE DI RENDERING AVANZATO ---
+function disegnaSborraRealistica(ctx, x, y, size) {
+    ctx.save();
+    ctx.translate(x, y);
+    
+    // Ruotiamo leggermente ogni schizzo per casualità
+    ctx.rotate(Math.random() * Math.PI * 2);
 
-    // Nucleo principale
-    ctx.beginPath()
-    ctx.arc(0, 0, size, 0, Math.PI * 2)
-    ctx.fill()
+    // 1. Alone di impatto (Splat basale molto trasparente)
+    ctx.globalAlpha = 0.25;
+    ctx.fillStyle = '#FFFFFF';
+    ctx.beginPath();
+    ctx.arc(0, 0, size * 1.3, 0, Math.PI * 2);
+    ctx.fill();
 
-    // Micro gocce intorno
-    for (let i = 0; i < 5; i++) {
-        let ang = Math.random() * Math.PI * 2
-        let dist = size * (1.2 + Math.random())
-        ctx.beginPath()
-        ctx.arc(Math.cos(ang) * dist, Math.sin(ang) * dist, size * 0.3, 0, Math.PI * 2)
-        ctx.fill()
+    // 2. Nucleo Viscoso (Goccia principale con gradiente 3D)
+    ctx.globalAlpha = 1.0;
+    
+    // Creiamo una forma irregolare (non un cerchio perfetto)
+    ctx.beginPath();
+    let nPoints = 8;
+    for (let i = 0; i < nPoints; i++) {
+        let angle = (i / nPoints) * Math.PI * 2;
+        // Irregolarità del raggio
+        let randomRadius = size * (0.8 + Math.random() * 0.4);
+        let px = Math.cos(angle) * randomRadius;
+        let py = Math.sin(angle) * randomRadius;
+        if (i === 0) ctx.moveTo(px, py);
+        else ctx.lineTo(px, py);
+    }
+    ctx.closePath();
+
+    // Gradiente radiale per volume lucido
+    let grad = ctx.createRadialGradient(-size*0.3, -size*0.3, size*0.1, 0, 0, size);
+    grad.addColorStop(0, '#FFFFFF'); // Centro bianco puro lucido
+    grad.addColorStop(0.8, '#F0F0F0'); // Bianco perla denso
+    grad.addColorStop(1, '#DCDCDC'); // Bordo leggermente grigio (ombra)
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    // 3. Micro-gocce satelliti (Schizzi piccoli intorno)
+    let nSatellites = 4 + Math.floor(Math.random() * 4);
+    for (let i = 0; i < nSatellites; i++) {
+        let ang = Math.random() * Math.PI * 2;
+        // Distanza dal centro variabile
+        let dist = size * (1.2 + Math.random() * 0.8);
+        // Dimensione satellite proporzionale
+        let satSize = size * (0.2 + Math.random() * 0.2);
+        
+        ctx.beginPath();
+        // Anche i satelliti hanno forma ellittica irregolare
+        ctx.ellipse(Math.cos(ang) * dist, Math.sin(ang) * dist, satSize, satSize * 0.7, ang, 0, Math.PI * 2);
+        ctx.fillStyle = Math.random() > 0.5 ? '#FFFFFF' : '#F5F5F5';
+        ctx.fill();
     }
 
-    // Colatura lucida
+    // 4. Colatura Viscosa (Dripping effect)
+    // Non tutti gli schizzi colano, 70% di probabilità
     if (Math.random() > 0.3) {
-        ctx.beginPath()
-        ctx.rect(-size/2, 0, size, size * 3)
-        ctx.fill()
-        ctx.beginPath()
-        ctx.arc(0, size * 3, size/2, 0, Math.PI * 2)
-        ctx.fill()
+        ctx.restore(); // Resettiamo la rotazione per colare dritto verso il basso
+        ctx.save();
+        ctx.translate(x, y);
+
+        let dripWidth = size * (0.5 + Math.random() * 0.3);
+        let dripLength = size * (2 + Math.random() * 3); // Lunghezza casuale scia
+        
+        // Disegniamo la scia verticale allargata in fondo
+        ctx.beginPath();
+        ctx.moveTo(-dripWidth/2, 0);
+        // Scia dritta
+        ctx.lineTo(-dripWidth/2, dripLength);
+        // Base a goccia curva
+        ctx.bezierCurveTo(-dripWidth/2, dripLength + dripWidth, dripWidth/2, dripLength + dripWidth, dripWidth/2, dripLength);
+        ctx.lineTo(dripWidth/2, 0);
+        ctx.closePath();
+        
+        // Stesso gradiente lucido del nucleo
+        let dripGrad = ctx.createLinearGradient(0, 0, 0, dripLength + dripWidth);
+        dripGrad.addColorStop(0, '#FFFFFF');
+        dripGrad.addColorStop(1, '#E0E0E0');
+        ctx.fillStyle = dripGrad;
+        ctx.fill();
     }
-    ctx.restore()
+
+    ctx.restore();
 }
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
