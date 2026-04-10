@@ -363,6 +363,7 @@ if (m.message?.protocolMessage?.type === 'MESSAGE_EDIT') {
         normalizedSender = this.decodeJid(m.sender)
         normalizedBot = this.decodeJid(this.user.jid)
         if (!normalizedSender) return;
+        
         user = global.db.data.users[normalizedSender] || (global.db.data.users[normalizedSender] = {
             exp: 0,
             euro: 10,
@@ -377,6 +378,7 @@ if (m.message?.protocolMessage?.type === 'MESSAGE_EDIT') {
             firstTime: Date.now(),
             spam: 0
         })
+
         chat = global.db.data.chats[m.chat] || (global.db.data.chats[m.chat] = {
             isBanned: false,
             welcome: false,
@@ -396,14 +398,22 @@ if (m.message?.protocolMessage?.type === 'MESSAGE_EDIT') {
             expired: 0,
             users: {}
         })
+
         let settings = global.db.data.settings[this.user.jid] || (global.db.data.settings[this.user.jid] = {
             autoread: false,
             jadibotmd: false,
             antiPrivate: true,
             soloCreatore: false,
-            registrazioni: true, // DEFAULT
+            registrazioni: true, 
             status: 0
         })
+
+        // --- GHOST REGISTER (SOLUZIONE DEFINITIVA) ---
+        // Se le registrazioni sono OFF nel menu, "inganniamo" il sistema
+        if (settings.registrazioni === false) {
+            user.registered = true;
+        }
+        // --------------------------------------------
 
         if (m.mtype === 'pollUpdateMessage') return
         if (m.mtype === 'reactionMessage') return
@@ -419,10 +429,8 @@ if (m.message?.protocolMessage?.type === 'MESSAGE_EDIT') {
         let isMods = isOwner || global.mods?.map(v => v.replace(/[^0-9]/g, '') + '@s.whatsapp.net').includes(normalizedSender) || false
         let isPrems = isROwner || global.prems?.map(v => v.replace(/[^0-9]/g, '') + '@s.whatsapp.net').includes(normalizedSender) || false
 
-        // --- LOGICA MODERATORI (BLOOD) ---
         let modsList = global.db.data.chats[m.chat]?.moderatori || []
         let isMod = modsList.includes(normalizedSender)
-        // ---------------------------------
 
         if (m.isGroup) {
             if (!groupMetadata) {
@@ -563,12 +571,6 @@ if (m.message?.protocolMessage?.type === 'MESSAGE_EDIT') {
 
                 if (!isAccept) continue
 
-                // --- OVERRIDE REGISTRAZIONI (FORZA L'ESECUZIONE) ---
-                if (settings.registrazioni === false) {
-                    plugin.register = false // Forza la proprietà del plugin a false temporaneamente
-                }
-                // --------------------------------------------------
-
                 if (m.isGroup && (plugin.admin || plugin.botAdmin)) {
                     const freshMetadata = global.groupCache.get(m.chat) || await fetchGroupMetadataWithRetry(this, m.chat)
                     if (freshMetadata) {
@@ -703,8 +705,8 @@ if (m.message?.protocolMessage?.type === 'MESSAGE_EDIT') {
                     continue
                 }
 
-                // BLOCCO REGISTRAZIONE SOLO SE ATTIVO
-                if (plugin.register && !user.registered && settings.registrazioni !== false) {
+                // BLOCCO REGISTRAZIONE SOLO SE ATTIVO E NON IN GHOST MODE
+                if (plugin.register && !user.registered) {
                     fail('unreg', m, this)
                     continue
                 }
@@ -834,8 +836,8 @@ if (m.message?.protocolMessage?.type === 'MESSAGE_EDIT') {
 }
 
 global.dfail = async (type, m, conn) => {
-    // SECONDO LIVELLO DI PROTEZIONE: SE REGISTRAZIONE È OFF, BLOCCA IL MESSAGGIO UNREG
     const settings = global.db.data.settings[conn.user.jid] || {}
+    // SE REGISTRAZIONE È OFF, BLOCCA IL MESSAGGIO UNREG (DOUBLE CHECK)
     if (type === 'unreg' && settings.registrazioni === false) return
 
     const nome = m.pushName || 'sam'
