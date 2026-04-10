@@ -9,6 +9,7 @@ const PERM = {
 };
 
 const featureRegistry = [
+  { key: 'antidelete', store: 'chat', perm: PERM.ADMIN, name: '🗑️ Antidelete', desc: 'Recupera messaggi eliminati' },
   { key: 'welcome', store: 'chat', perm: PERM.ADMIN, name: '👋 Welcome', desc: 'Messaggio di benvenuto' },
   { key: 'goodbye', store: 'chat', perm: PERM.ADMIN, name: '🚪 Addio', desc: 'Messaggio di addio' },
   { key: 'antispam', store: 'chat', perm: PERM.ADMIN, name: '🛑 Antispam', desc: 'Protezione flood e spam' },
@@ -84,14 +85,15 @@ let handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, isS
   📡 𝚂𝚝𝚊𝚝𝚞𝚜: 𝙾𝚗𝚕𝚒𝚗𝚎
 └────────────────────┘
 
-*〘 ɪɴsᴛʀᴜᴢɪᴏɴɪ ᴏᴘᴇʀᴀᴛɪ𝐯ᴇ 〙*
+*〘 ɪɴsᴛʀᴜᴢɪᴏɴɪ ᴏᴘᴇʀᴀᴛɪᴠᴇ 〙*
 > Attiva o disattiva i moduli:
 *│ ➤* .attiva <nome>
 *│ ➤* .disattiva <nome>
 
 *┍━━━━━〔 🛡️ sɪᴄᴜʀᴇᴢﾞᴀ 〕━━━━━┑*\n`;
 
-  const sicurezzaKeys = ['antigore', 'modoadmin', 'antivoip', 'antiLink', 'antiLinkUni', 'antiLink2', 'antitrava', 'antinuke', 'antioneview', 'antispam', 'antisondaggi', 'antiparolacce', 'antiBot', 'antiBot2', 'antimedia', 'antitagall', 'antiporno'];
+  // Aggiunto 'antidelete' alla lista della sicurezza
+  const sicurezzaKeys = ['antidelete', 'antigore', 'modoadmin', 'antivoip', 'antiLink', 'antiLinkUni', 'antiLink2', 'antitrava', 'antinuke', 'antioneview', 'antispam', 'antisondaggi', 'antiparolacce', 'antiBot', 'antiBot2', 'antimedia', 'antitagall', 'antiporno'];
   featureRegistry.filter(f => sicurezzaKeys.includes(f.key)).forEach(f => {
     menu += `┇ ${getStatus(f)} ${f.name}\n┇ _${f.desc}_\n┇ ➤ *${f.key}*\n┇\n`;
   });
@@ -116,14 +118,13 @@ let handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, isS
 
   menu += `*┕━━━━━━━──ׄ──ׅ──ׄ──━━━━━━━┙*\n\n_ʙʟᴅ-ʙᴏᴛ sᴇᴄᴜʀɪᴛʏ ɪɴᴛᴇʀꜰᴀᴄᴇ_`;
 
-  // --- CARICAMENTO FILE LOCALE menu-sicurezza.jpeg ---
   let thumb;
   const imagePath = path.join(process.cwd(), 'menu-sicurezza.jpeg');
-  
+
   if (fs.existsSync(imagePath)) {
-    thumb = fs.readFileSync(imagePath); // Legge il file locale
+    thumb = fs.readFileSync(imagePath);
   } else {
-    thumb = Buffer.alloc(0); // Buffer vuoto se il file non esiste (evita crash)
+    thumb = Buffer.alloc(0);
   }
 
   await conn.sendMessage(m.chat, {
@@ -134,7 +135,7 @@ let handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, isS
         body: "Terminal Console v3.1",
         mediaType: 1,
         renderLargerThumbnail: true,
-        thumbnail: thumb, // Invia l'immagine caricata dal file
+        thumbnail: thumb,
         sourceUrl: 'https://github.com'
       }
     }
