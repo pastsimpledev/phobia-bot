@@ -5,6 +5,16 @@ moment.locale('it');
 let Reg = /^\s*([\w\s]+)[.| ]+(\d{1,3})\s*$/i;
 
 let handler = async function (m, { conn, text, usedPrefix, command }) {
+    // --- INTEGRAZIONE ATTIVA/DISATTIVA ---
+    // Controlla se il modulo 'registrazioni' è attivo per il bot (store: 'bot')
+    const botJid = conn.decodeJid(conn.user.jid);
+    const botSettings = global.db.data.settings[botJid] || {};
+    
+    if (!botSettings.registrazioni && !m.fromMe) {
+        return m.reply('『 🛑 』 Il sistema di registrazione è attualmente *DISATTIVATO* dal Master Control.');
+    }
+    // -------------------------------------
+
     const isOwner = global.owner?.includes(m.sender);
 
     let target = m.sender;
@@ -14,7 +24,7 @@ let handler = async function (m, { conn, text, usedPrefix, command }) {
     }
 
     let user = global.db.data.users[target] || (global.db.data.users[target] = {});
-    
+
     let perfil = await conn.profilePictureUrl(target, 'image').catch(async _ => {
         return 'https://i.ibb.co/BKHtdBNp/default-avatar-profile-icon-1280x1280.jpg';
     });
