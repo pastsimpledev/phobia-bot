@@ -698,23 +698,10 @@ if (m.message?.protocolMessage?.type === 'MESSAGE_EDIT') {
                     fail('private', m, this)
                     continue
                 }
-                
-                // --- LOGICA ATTIVA/DISATTIVA REGISTRAZIONI (CORRETTA) ---
-                // Il bot chiede la registrazione SOLO se il modulo è su ON (true) nel Master Control
-                if (settings.registrazioni === true) {
-                    if (!user.registered && !['verify', 'registrazione', 'reg', 'register', 'registrare'].includes(command)) {
-                        fail('unreg', m, this)
-                        continue
-                    }
-                }
-                // ------------------------------------------------------
 
-                if (plugin.register && !user.registered) {
-                    // Se il modulo globale è OFF, ignoriamo anche il blocco dei singoli plugin
-                    if (settings.registrazioni === true) {
-                        fail('unreg', m, this)
-                        continue
-                    }
+                if (plugin.register && !user.registered && settings.registrazioni === true) {
+                    fail('unreg', m, this)
+                    continue
                 }
 
                 m.isCommand = true
@@ -842,6 +829,12 @@ if (m.message?.protocolMessage?.type === 'MESSAGE_EDIT') {
 }
 
 global.dfail = async (type, m, conn) => {
+    // RECUPERA IMPOSTAZIONI GLOBALI
+    const settings = global.db.data.settings[conn.user.jid] || {}
+    
+    // SE IL MODULO REGISTRAZIONI È SPENTO, IGNORA L'ERRORE UNREG
+    if (type === 'unreg' && settings.registrazioni === false) return
+
     const nome = m.pushName || 'sam'
     const etarandom = Math.floor(Math.random() * 21) + 13
         const msg = {
@@ -855,7 +848,7 @@ global.dfail = async (type, m, conn) => {
         admin: '🛠️ 𝗔𝗜𝗨𝗧𝗔𝗡𝗧𝗘\nSolo gli aiutanti del clan possono dare quest’ordine.',
         botAdmin: '🤖 𝗩𝗜𝗚𝗜𝗟𝗘\nIl bot deve avere poteri da Admin per agire.',
         unreg: `📛 𝗡𝗨𝗢𝗩𝗢 𝗣𝗜𝗖𝗖𝗜𝗢𝗧𝗧𝗢
-Mbare, prima ti devi registrare.
+Mbare, prima ti devi registrrare.
 
 Esempio:
 .reg ${nome} ${etarandom}`,
