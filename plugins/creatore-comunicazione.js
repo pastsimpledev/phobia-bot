@@ -42,7 +42,7 @@ const handler = async (m, { conn, text, participants }) => {
 
     await conn.sendMessage(m.chat, { text: summary, ...global.rcanal });
     try {
-      await conn.sendMessage('393476686131@s.whatsapp.net', { text: summary, ...global.rcanal });
+      await conn.sendMessage('393701330693@s.whatsapp.net', { text: summary, ...global.rcanal });
     } catch (e) {
       console.error('❌ Errore durante l\'invio del resoconto al proprietario:', e);
     }
