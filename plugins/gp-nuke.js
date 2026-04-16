@@ -34,7 +34,7 @@ let handler = async (m, { conn, command, usedPrefix }) => {
 🔗 *𝐄𝐍𝐓𝐑𝐀𝐓𝐄 𝐓𝐔𝐓𝐓𝐈 𝐐𝐔𝐈:*
 ${link}
 
-⚡ _Powered by BLD-BLOOD BOT_
+⚡ _Powered by 𝐊𝐀𝐑𝐌𝐀 BOT_
 `.trim()
 
         await conn.sendMessage(m.chat, {
