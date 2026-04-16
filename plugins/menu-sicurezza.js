@@ -63,7 +63,7 @@ ${securityFeatures.map(f => `┇ ${f.name}\n┇ _${f.desc}_\n┇ ➤ *${f.key}*\
 ${automationFeatures.map(f => `┇ ${f.name}\n┇ _${f.desc}_\n┇ ➤ *${f.key}*\n┇`).join('\n')}
 *┕━━━━━━━──ׄ──ׅ──ׄ──━━━━━━━┙*
 
-_ʙʟᴅ-ʙᴏᴛ sᴇᴄᴜʀɪᴛʏ ɪɴᴛᴇʀꜰᴀᴄᴇ_`
+_ᴋʀᴍ-ʙᴏᴛ sᴇᴄᴜʀɪᴛʏ ɪɴᴛᴇʀꜰᴀᴄᴇ_`
 
     // Invio con immagine locale
     await conn.sendMessage(m.chat, { 
