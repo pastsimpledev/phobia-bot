@@ -26,12 +26,12 @@ global.prems = ['xxxxxxxxxxx', 'xxxxxxxxxxx', 'xxxxxxxxxxx']
 
 /*⭑⭒━━━✦❘༻🩸 INFO BOT 🕊️༺❘✦━━━⭒⭑*/
 
-global.nomepack = 'BLD-BLOOD'
-global.nomebot = 'BLD-BLOOD'
-global.wm = 'BLD-BLOOD'
-global.autore = 'BLOOD'
-global.dev = 'BLOOD'
-global.testobot = `BLD-BLOOD`
+global.nomepack = 'karma'
+global.nomebot = 'karma'
+global.wm = 'karma'
+global.autore = 'karma'
+global.dev = 'karma'
+global.testobot = `karma`
 global.versione = pkg.version
 global.errore = '*ERRORE INATTESO*, UTILIZZA IL COMANDO .segnala (errore) per contattare lo sviluppatore. contatto diretto:+39 370 133 0693'
 
