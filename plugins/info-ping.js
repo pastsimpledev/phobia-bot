@@ -32,7 +32,7 @@ let handler = async (m, { conn, usedPrefix }) => {
 𝑨𝒗𝒗𝒊𝒐: ${activationTime}
 
 ╭━━━━━━•✦•━━━━━━╮
-   𝑶𝒘𝒏𝒆𝒓: ₥𐌄𐌏Ⱳ
+   𝑶𝒘𝒏𝒆𝒓: ɱɛơա
    𝑺𝒕𝒂𝒕𝒐: _Online_
 ╰━━━━━━•✦•━━━━━━╯
 `.trim()
