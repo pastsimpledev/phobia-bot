@@ -13,9 +13,9 @@ const moduleCache = new NodeCache({ stdTTL: 300 });
 
 /*⭑⭒━━━✦❘༻☾⋆⁺₊✧ karma✧₊⁺⋆☽༺❘✦━━━⭒⭑*/
 
-global.sam = ['+393455383567',]
+global.sam = ['393455383567',]
 global.owner = [
-  ['+393455383567', 'meow', true],
+  ['393455383567', 'meow', true],
   ['', '', true],
   ['', '', true],
   ['', '', true], 
