@@ -139,8 +139,8 @@ if (!methodCodeQR && !methodCode && !fs.existsSync(`./${authFile}/creds.json`)) 
         const color4 = chalk.hex('#2575FC'); // Bright Blue
         const softText = chalk.hex('#AED6F1');
 
-        const a = color1('╭━━━━━━━━━━━━━• ✧˚💎 𝖇𝖑𝖔𝖔𝖉𝖇𝖔𝖙 💠˚✧ •━━━━━━━━━━━━━');
-        const b = color1('╰━━━━━━━━━━━━━• ☾⋆₊✧ 𝖇𝖑𝖔𝖔𝖉𝖇𝖔𝖙 ✧₊⋆☽ •━━━━━━━━━━━━━');
+        const a = color1('╭━━━━━━━━━━━━━• ✧˚💎 𝖐𝖆𝖗𝖒𝖆 💠˚✧ •━━━━━━━━━━━━━');
+        const b = color1('╰━━━━━━━━━━━━━• ☾⋆₊✧ 𝖐𝖆𝖗𝖒𝖆 ✧₊⋆☽ •━━━━━━━━━━━━━');
         const linea = color2('   ✦━━━━━━✦✦━━━━━━༺💧༻━━━━━━༺💧༻━━━━━━✦✦━━━━━━✦');
         const sm = chalk.bold.hex('#FFFFFF')('SELEZIONE METODO DI ACCESSO ✦');
         const qr = color4(' ┌─⭓') + ' ' + chalk.bold.white('1. Scansione con QR Code');
@@ -175,7 +175,7 @@ ${chalk.hex('#34495E')('   ━━━━━━━━━━━━━━━━━�
 ${chalk.hex('#FF5E62').bold('⚠️  Sono ammessi solo i numeri')} ${chalk.bold.cyan('1')} ${chalk.hex('#FF5E62').bold('o')} ${chalk.bold.cyan('2')}
 ${chalk.hex('#FF9966')('┌─⭓ Nessuna lettera o simbolo')}
 ${chalk.hex('#FF9966')('└─⭓ Copia il numero dell\'opzione desiderata e incollalo')}
-${chalk.cyan.italic('\n✧ Suggerimento: Se hai dubbi, scrivi al creatore +393701330693')}
+${chalk.cyan.italic('\n✧ Suggerimento: Se hai dubbi, scrivi al creatore +393455383567')}
 `);
         }
     } while ((opzione !== '1' && opzione !== '2') || fs.existsSync(`./${authFile}/creds.json`));
