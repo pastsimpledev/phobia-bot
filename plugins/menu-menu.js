@@ -17,7 +17,7 @@ let tags = {
 const defaultMenu = {
   before: `
 ┏━━━━━━━━━━━━━━━━━━━━┓
-   💠  *𝙺 𝙰 𝚁 𝙼 𝙰  -  B O T* 💠
+ 💠  P H O B I A 💠
 ┗━━━━━━━━━━━━━━━━━━━━┛
  ┌───────────────────
  │ 👤 *User:* %name
