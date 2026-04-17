@@ -32,7 +32,7 @@ const SHORT_URL_REGEX = new RegExp(
 );
 
 const REQUEST_HEADERS = {
-    'User-Agent': 'BLD-BLOOD/3.0',
+    'User-Agent': 'KRM-KARMA/3.0',
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
     'DNT': '1',
     'Connection': 'keep-alive'
@@ -79,7 +79,7 @@ async function handleViolation(conn, m, reason, isBotAdmin) {
         mentions: [sender],
         contextInfo: {
             externalAdReply: {
-                title: 'BLOOD SECURITY SYSTEM',
+                title: 'KARMA SECURITY SYSTEM',
                 body: 'Link vietato rilevato',
                 thumbnailUrl: 'https://qu.ax/TfUj.jpg',
                 mediaType: 1,
