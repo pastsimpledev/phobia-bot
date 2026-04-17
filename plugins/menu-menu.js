@@ -30,7 +30,7 @@ const defaultMenu = {
   header: '      ⋆｡˚『 %category 』˚｡⋆\n╭',
   body: '*│ ➢* 『%emoji』 %cmd',
   footer: '*╰━━━━━━━──────━━━━━━━*\n',
-  after: `_Powered by 𝙺𝚁𝙼-BOT Interface_`,
+  after: `_Powered by PHB-BOT Interface_`,
 }
 
 // --- MODIFICA PERCORSO: CARTELLA SPECIFICA ---
@@ -98,7 +98,7 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
     await conn.sendMessage(m.chat, {
       image: { url: localImg },
       caption: text.trim(),
-      footer: "𝙺 𝚁 𝙼 - B O T  S Y S T E M",
+      footer: "P H O B I A  S Y S T E M",
       buttons: buttons,
       headerType: 4,
       viewOnce: true 
