@@ -42,7 +42,7 @@ export async function before(m, { conn, isAdmin, isBotAdmin, isOwner, isSam }) {
   
   const text = `${header}
 ╭
-┃ 🛡️ \`Stato:\` *Protocollo Blood Attivo*
+┃ 🛡️ \`Stato:\` *Protocollo Karma Attivo*
 ┃
 ┃ 『 👤 』 \`Target:\` @${m.sender.split('@')[0]}
 ┃ 『 🖼️ 』 \`Rilevato:\` *Media Permanente*
