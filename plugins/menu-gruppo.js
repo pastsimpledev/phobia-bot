@@ -10,7 +10,7 @@ const localImg = join(process.cwd(), 'menu-gruppo.jpeg');
 const defaultMenu = {
   before: `
 ┎━━━━━━━━━━━━━━━━━━━┑
-┃   ✧  𝐊𝐑𝐌 - 𝐆𝐑𝐎𝐔𝐏  ✧     ┃
+┃   ✧   POBIA   ✧  ┃
 ┖━━━━━━━━━━━━━━━━━━━┙
 ┌───────────────────┐
   👤 𝚄𝚜𝚎𝚛: %name
@@ -84,7 +84,7 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
         mentionedJid: [m.sender],
         forwardedNewsletterMessageInfo: {
           newsletterJid: '120363232743845068@newsletter',
-          newsletterName: "✧ 𝙺𝚁𝙼-𝙱𝙾𝚃 𝙶𝚁𝙾𝚄𝙿 𝙰𝙳𝙼𝙸𝙽 ✧"
+          newsletterName: "✧ PHOBIA-BOT 𝙶𝚁𝙾𝚄𝙿 𝙰𝙳𝙼𝙸𝙽 ✧"
         }
       }
     }, { quoted: m })
