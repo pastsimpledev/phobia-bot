@@ -37,7 +37,7 @@ global.errore = '*ERRORE INATTESO*, UTILIZZA IL COMANDO .segnala (errore) per co
 
 /*⭑⭒━━━✦❘༻🌐 LINK 🌐༺❘✦━━━⭒⭑*/
 
-global.repobot ='https//wa.me/393701330693'
+global.repobot ='https//wa.me/393455383567'
 global.gruppo = 'https://chat.whatsapp.com/KdLKg5DoZ2CGrNlbqJRdV9'
 global.insta = 'https://www.instagram.com/bloodvelith'
 
