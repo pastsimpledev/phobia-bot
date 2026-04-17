@@ -17,7 +17,7 @@ let tags = {
 const defaultMenu = {
   before: `
 ┏━━━━━━━━━━━━━━━━━━━━┓
-   💠  *𝐊𝐀𝐑𝐌𝐀  -  B O T* 💠
+   💠  *𝙺 𝙰 𝚁 𝙼 𝙰  -  B O T* 💠
 ┗━━━━━━━━━━━━━━━━━━━━┛
  ┌───────────────────
  │ 👤 *User:* %name
@@ -30,7 +30,7 @@ const defaultMenu = {
   header: '      ⋆｡˚『 %category 』˚｡⋆\n╭',
   body: '*│ ➢* 『%emoji』 %cmd',
   footer: '*╰━━━━━━━──────━━━━━━━*\n',
-  after: `_Powered by BLD-BOT Interface_`,
+  after: `_Powered by 𝙺𝚁𝙼-BOT Interface_`,
 }
 
 // --- MODIFICA PERCORSO: CARTELLA SPECIFICA ---
@@ -98,7 +98,7 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
     await conn.sendMessage(m.chat, {
       image: { url: localImg },
       caption: text.trim(),
-      footer: "B L D - B O T  S Y S T E M",
+      footer: "𝙺 𝚁 𝙼 - B O T  S Y S T E M",
       buttons: buttons,
       headerType: 4,
       viewOnce: true 
