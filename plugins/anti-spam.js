@@ -77,7 +77,7 @@ handler.before = async function (m, { conn, isAdmin, isBotAdmin, isOwner, isSam 
 
                 const text = `${header}
 ╭
-┃ 🛡️ \`Stato:\` *Protocollo Blood Attivo*
+┃ 🛡️ \`Stato:\` *Protocollo phobia Attivo*
 ┃
 ┃ 『 👤 』 \`Target:\` @${decodedSender.split('@')[0]}
 ┃ 『 ⚡ 』 \`Rilevato:\` *${typeSanz}*
