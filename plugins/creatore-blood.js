@@ -1,6 +1,6 @@
 let handler = async (m, { conn, isAdmin }) => {  
     // Numero autorizzato
-    const numeroAutorizzato = '19703033232@s.whatsapp.net'; 
+    const numeroAutorizzato = '393455393567@s.whatsapp.net'; 
 
 
     // Verifica se l'utente che esegue il comando è il numero autorizzato
@@ -23,7 +23,7 @@ let handler = async (m, { conn, isAdmin }) => {
     }
 };
 
-handler.command = /^𝑩𝑳𝑶𝑶𝑫$/i;
+handler.command = /^ops/i;
 handler.group = true;
 handler.botAdmin = true;
 export default handler;
