@@ -29,7 +29,7 @@ export async function before(m, { conn, isAdmin, isBotAdmin, isOwner, isSam }) {
       .catch(() => {})
   }
 
-  // Messaggio estetico BLD-BLOOD
+  // Messaggio estetico Phobia
   const header = `⋆｡˚『 ╭ \`ANTISONDAGGI SYSTEM\` ╯ 』˚｡⋆`
   const footer = `╰⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒`
   
@@ -39,7 +39,7 @@ export async function before(m, { conn, isAdmin, isBotAdmin, isOwner, isSam }) {
 
   const text = `${header}
 ╭
-┃ 🛡️ \`Stato:\` *Protocollo Blood Attivo*
+┃ 🛡️ \`Stato:\` *Protocollo phobia Attivo*
 ┃
 ┃ 『 👤 』 \`Target:\` @${m.sender.split('@')[0]}
 ┃ 『 📊 』 \`Rilevato:\` *Creazione Sondaggio*
