@@ -40,11 +40,11 @@ export async function before(m, { conn, isAdmin, isOwner, isSam }) {
   // Esecuzione sanzione
   await conn.groupParticipantsUpdate(m.chat, [m.sender], 'remove');
 
-  // Messaggio estetico KRM-KARMA
+  // Messaggio estetico phobia
   const text = `
 ⋆｡˚『 ╭ \`SISTEMA ANTIBOT\` ╯ 』˚｡⋆
 ╭
-┃ 🛡️ \`Stato:\` *Protocollo karma Attivo*
+┃ 🛡️ \`Stato:\` *Protocollo phobia Attivo*
 ┃
 ┃ 『 👤 』 \`Target:\` @${m.sender.split('@')[0]}
 ┃ 『 🤖 』 \`Dispositivo:\` *${device.toUpperCase()}*
