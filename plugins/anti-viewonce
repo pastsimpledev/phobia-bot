@@ -32,7 +32,7 @@ handler.before = async function (m, { conn, isAdmin, isOwner, isSam }) {
   
   const text = `${header}
 ╭
-┃ 🛡️ \`Stato:\` *Protocollo Karma Attivo*
+┃ 🛡️ \`Stato:\` *Protocollo phobia Attivo*
 ┃
 ┃ 『 👤 』 \`Target:\` @${senderTag}
 ┃ 『 👁️‍🗨️ 』 \`Rilevato:\` *View-Once Message*
