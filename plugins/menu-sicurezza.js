@@ -43,7 +43,7 @@ let handler = async (m, { conn, usedPrefix: _p, command, args, isOwner, isAdmin 
   if (!args.length || /menu|help/i.test(args[0])) {
     let text = `
 ┎━━━━━━━━━━━━━━━━━━━━┑
-┃   ✧  𝐊𝐑𝐌 - 𝐌𝐀𝐒𝐓𝐄𝐑 𝐂𝐎𝐍𝐓𝐑𝐎𝐋  ✧   ┃
+┃ ✧    𝐌𝐀𝐒𝐓𝐄𝐑  ✧   ┃
 ┖━━━━━━━━━━━━━━━━━━━━┙
 ┌────────────────────┐
   👤 𝚄𝚜𝚎𝚛: ${userName}
@@ -66,19 +66,13 @@ ${automationFeatures.map(f => `┇ ${f.name}\n┇ _${f.desc}_\n┇ ➤ *${f.key}
 _ᴋʀᴍ-ʙᴏᴛ sᴇᴄᴜʀɪᴛʏ ɪɴᴛᴇʀꜰᴀᴄᴇ_`
 
     // Invio con immagine locale
-    await conn.sendMessage(m.chat, { 
-      image: { url: localImg }, 
-      caption: text.trim(),
-      contextInfo: {
+   await conn.sendMessage(m.chat, {
+    text: text.trim(),
+    contextInfo: {
         mentionedJid: [m.sender],
         forwardedNewsletterMessageInfo: {
-          newsletterJid: '120363232743845068@newsletter',
-          newsletterName: "🛡️ 𝐒𝐘𝐒𝐓𝐄𝐌 𝐒𝐄𝐂𝐔𝐑𝐈𝐓𝐘 𝐂𝐎𝐍𝐓𝐑𝐎𝐋 🛡️"
-        }
-      }
-    }, { quoted: m })
-    return
-  }
+            newsletterJid: '12036323274384506@newsletter',
+            newsletterName: '✧ PHB-BOT  ✧'
 
   // --- LOGICA DI ATTIVAZIONE ---
   let isEnable = !/disattiva|off|0/i.test(command)
