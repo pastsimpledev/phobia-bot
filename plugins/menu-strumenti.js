@@ -7,7 +7,7 @@ const localImg = join(process.cwd(), 'menu-strumenti.jpeg');
 const defmenu = {
   before: `
 ┏━━━━━━━━━━━━━━━━━━━━┓
-   💉  *K A R M A -  T O O L S* 💉
+   💉 *T O O L S* 💉
 ┗━━━━━━━━━━━━━━━━━━━━┛
  ┌───────────────────
  │ 🧪 *Soggetto:* %name
@@ -55,19 +55,13 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
     await m.react('🧪')
 
     // --- INVIO COME IMMAGINE (SOSTITUITO VIDEO) ---
-    await conn.sendMessage(m.chat, {
-      image: { url: localImg },
-      caption: _text.trim(),
-      contextInfo: {
-        ...fake.contextInfo,
+      await conn.sendMessage(m.chat, {
+    text: text.trim(),
+    contextInfo: {
         mentionedJid: [m.sender],
         forwardedNewsletterMessageInfo: {
-          ...fake.contextInfo?.forwardedNewsletterMessageInfo,
-          newsletterJid: '120363232743845068@newsletter',
-          newsletterName: "🩸 Cyber Blood - Tools ☣️"
-        }
-      }
-    }, { quoted: m })
+            newsletterJid: '12036323274384506@newsletter',
+            newsletterName: '✧ PHB-BOT  ✧'
 
   } catch (e) {
     console.error(e)
