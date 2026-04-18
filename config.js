@@ -18,7 +18,7 @@ global.owner = [
   ['393455383567', 'meow', true],
   ['212785982721', 'loki', true],
   ['19782540592', 'leak', true],
-  ['', '', true], 
+  ['19782540529', 'nnnnn', true], 
   ['xxxxxxxxxxxxx']
 ]
 global.mods = ['xxxxxxxxxxx', 'xxxxxxxxxxx', 'xxxxxxxxxxx']
