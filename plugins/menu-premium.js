@@ -64,18 +64,13 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
     await m.react('⭐')
 
     // --- INVIO COME IMMAGINE (SOSTITUITO VIDEO) ---
-    await conn.sendMessage(m.chat, {
-      image: { url: localImg },
-      caption: text.trim(),
-      contextInfo: {
+   await conn.sendMessage(m.chat, {
+    text: text.trim(),
+    contextInfo: {
         mentionedJid: [m.sender],
         forwardedNewsletterMessageInfo: {
-          newsletterJid: '120363232743845068@newsletter',
-          newsletterName: "✧ 𝙱𝙻𝙳-𝙱𝙾𝚃 𝙿𝚁𝙴𝙼𝙸𝚄𝙼 ✧"
-        }
-      }
-    }, { quoted: m })
-
+            newsletterJid: '12036323274384506@newsletter',
+            newsletterName: '✧ PHB-BOT  ✧'
   } catch (e) {
     console.error(e)
     conn.reply(m.chat, '❌ Errore nel caricamento del modulo Premium. Verifica menu-premium.jpeg.', m)
