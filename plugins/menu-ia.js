@@ -84,14 +84,13 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
     await m.react('🧠')
 
     // --- INVIO CON IMMAGINE E CONTEXT GRUPPO ---
-    await conn.sendMessage(m.chat, {
-      image: { url: localImg },
+    await conn.sendMessage(m.chat,
       caption: text.trim(),
       contextInfo: {
         mentionedJid: [m.sender],
         forwardedNewsletterMessageInfo: {
           newsletterJid: '120363232743845068@newsletter',
-          newsletterName: "✧ 𝙱𝙻𝙳-𝙱𝙾𝚃 𝙸𝙽𝚃𝙴𝙻𝙻𝙸𝙶𝙴𝙽𝙲𝙴 ✧"
+          newsletterName: "✧ FEAR-𝙱𝙾𝚃 𝙸𝙽𝚃𝙴𝙻𝙻𝙸𝙶𝙴𝙽𝙲𝙴 ✧"
         }
       }
     }, { quoted: m })
