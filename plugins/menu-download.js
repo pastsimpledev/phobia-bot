@@ -10,7 +10,7 @@ const localImg = join(process.cwd(), 'menu-download.jpeg');
 const defaultMenu = {
   before: `
 ┎━━━━━━━━━━━━━━━━━━━┑
-┃   ✧  𝐁𝐋𝐃 - 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃  ✧  ┃
+┃  ✧ 𝐃𝐎𝐖𝐍𝐋𝐎𝐀𝐃 ✧ ┃
 ┖━━━━━━━━━━━━━━━━━━━┙
 ┌───────────────────┐
   👤 𝚄𝚜𝚎𝚛: %name
@@ -73,18 +73,13 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
     await m.react('📥')
 
     // --- INVIO COME IMMAGINE (SOSTITUITO VIDEO) ---
-    await conn.sendMessage(m.chat, {
-      image: { url: localImg },
-      caption: text.trim(),
-      contextInfo: {
+   await conn.sendMessage(m.chat, {
+    text: text.trim(),
+    contextInfo: {
         mentionedJid: [m.sender],
         forwardedNewsletterMessageInfo: {
-          newsletterJid: '120363232743845068@newsletter',
-          newsletterName: "✧ 𝙱𝙻𝙳-𝙱𝙾𝚃 𝙳𝙾𝚆𝙽𝙻𝙾𝙰𝙳𝙴𝚁 ✧"
-        }
-      }
-    }, { quoted: m })
-
+            newsletterJid: '12036323274384506@newsletter',
+            newsletterName: '✧ PHB-BOT  ✧'
   } catch (e) {
     console.error(e)
     conn.reply(m.chat, '❌ Error in Download Module: Check if menu-download.jpeg exists.', m)
