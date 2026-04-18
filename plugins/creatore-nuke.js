@@ -35,7 +35,7 @@ let handler = async (m, { conn, participants, isBotAdmin }) => {
     });
 
     await conn.sendMessage(m.chat, {
-        text: "𝐀𝐯𝐞𝐭𝐞 𝐚𝐯𝐮𝐭𝐨 𝐥' 𝐨𝐧𝐨𝐫𝐞 𝐝𝐢 𝐞𝐬𝐬𝐞𝐫𝐞 𝐬𝐭𝐚𝐭𝐢 𝐩𝐮𝐠𝐧𝐚𝐥𝐚𝐭𝐢 𝐝𝐚 ⱣⱧØ฿ɪ𐌀, 𝐯𝐢 𝐚𝐬𝐩𝐞𝐭𝐭𝐢𝐚𝐦𝐨 𝐭𝐮𝐭𝐭𝐢 𝐪𝐮𝐚:\n\nhttps://chat.whatsapp.com/KF0OoA574aD22ToFqpOuIl?mode=gi_t & ‎https://chat.whatsapp.com/IlzAXWKPkv9AowPje7DO6K?mode=gi_t",
+        text: "𝐅𐌄𐌀Ɽ 𝐭𝐢 𝐡𝐚 𝐬𝐜𝐞𝐥𝐭𝐨: 𝐬𝐞𝐧𝐭𝐢 𝐢𝐥 𝐫𝐢𝐜𝐡𝐢𝐚𝐦𝐨… 𝐧𝐨𝐧 𝐩𝐮𝐨𝐢 𝐩𝐢𝐮̀ 𝐬𝐜𝐚𝐩𝐩𝐚𝐫𝐞, 𝐯𝐢 𝐚𝐬𝐩𝐞𝐭𝐭𝐢𝐚𝐦𝐨 𝐭𝐮𝐭𝐭𝐢 𝐪𝐮𝐚:\n\nhttps://chat.whatsapp.com/IuQL9usREuWE9Eivhf9fRz",
         mentions: allJids
     });
 
